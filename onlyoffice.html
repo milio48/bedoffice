@@ -270,6 +270,23 @@
         pendingOpenBuffer = openBuffer
     }
 
+    function onSaveDocument() {
+        setStreamOnlyFlag()
+        pendingSave = {
+            requestId: `save_ui_${Date.now()}`,
+            format: ''
+        }
+        try {
+            if (docEditor && docEditor.downloadAs) {
+                docEditor.downloadAs()
+            }
+        } catch (error) {
+            const requestId = pendingSave && pendingSave.requestId
+            pendingSave = null
+            postSaveError(requestId, error)
+        }
+    }
+
     function loadOnlyoffice(docConfig, openBuffer) {
         if (docEditor) docEditor.destroyEditor()
         pendingSave = null
@@ -287,6 +304,7 @@
         config.events.onMetaChange = onMetaChange
         config.events.onRequestRename = onRequestRename
         config.events.onRequestSaveAs = onRequestSaveAs
+        config.events.onSaveDocument = onSaveDocument
         docEditor = new DocsAPI.DocEditor('editor', config)
     }
 
