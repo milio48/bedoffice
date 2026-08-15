@@ -711,10 +711,17 @@
     </style>
 </head>
 <body>
+<script>
+    // Clean URL: strip /index.html if present
+    if (window.location.pathname.endsWith('/index.html')) {
+        const cleanPath = window.location.pathname.slice(0, -10) || '/';
+        window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
+    }
+</script>
 
 <nav class="navbar">
     <div class="nav-container">
-        <a href="index.html" class="brand">
+        <a href="./" class="brand">
             <img src="./assets/favicon.ico" alt="ONLYOFFICE x bedoffice" class="brand-logo"/>
             <div class="brand-text">
                 <div class="brand-title">
