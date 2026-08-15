@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>OnlyOffice</title>
+    <title>bedoffice Embed Bridge</title>
     <link rel="icon" href="./assets/favicon.ico" type="image/x-icon"/>
     <script type="text/javascript" src="9.3.0.133-24e34b4f401d86dfb31def637358e2fa/vendor/web-apps/apps/api/documents/api.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-        #editor {
+        html, body, .container, #editor {
             width: 100%;
             height: 100%;
-        }
-
-        .container {
-            width: 100vw;
-            height: 100vh;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -98,7 +95,7 @@
 
     function openPendingBinaryDocument() {
         if (!pendingOpenBuffer) return
-        if (!docEditor) throw new Error('编辑器未就绪')
+        if (!docEditor) throw new Error('Editor is not ready')
         const buffer = pendingOpenBuffer
         docEditor.openDocument({ buffer: buffer })
         pendingOpenBuffer = null
@@ -118,7 +115,7 @@
         pendingSave = null
         const buffer = data && data.buffer
         if (!buffer) {
-            postSaveError(request && request.requestId, '未获取到文件流')
+            postSaveError(request && request.requestId, 'File stream not found')
             return
         }
         if (!request && streamFallback === 'download') {
@@ -137,7 +134,7 @@
 
     function handleSaveCommand(data) {
         if (!docEditor) {
-            postSaveError(data && data.requestId, '编辑器未就绪')
+            postSaveError(data && data.requestId, 'Editor is not ready')
             return
         }
         setStreamOnlyFlag()
@@ -153,7 +150,7 @@
     }
 
     function onEditorError(event) {
-        const message = `编辑器错误: ${JSON.stringify(event && event.data)}`
+        const message = `Editor error: ${JSON.stringify(event && event.data)}`
         if (!pendingSave) {
             postOpenError(message)
             return
@@ -197,12 +194,12 @@
         const url = typeof data === 'string' ? data : data && (data.url || data.fileUrl)
         const fileType = data && data.fileType || ''
         if (!url) {
-            postSaveAsError('onRequestSaveAs 未返回文件地址')
+            postSaveAsError('onRequestSaveAs returned no file URL')
             return
         }
         fetch(url)
             .then(response => {
-                if (!response.ok) throw new Error(`下载失败 HTTP ${response.status}`)
+                if (!response.ok) throw new Error(`Download failed with HTTP status ${response.status}`)
                 return response.arrayBuffer()
             })
             .then(buffer => postToParent({
@@ -256,7 +253,7 @@
             ))
         }
         if (!config.document.title) {
-            config.document.title = `文档.${config.document.fileType || 'docx'}`
+            config.document.title = `Document.${config.document.fileType || 'docx'}`
         }
         if (!config.document.directUrl && config.document.url) {
             config.document.directUrl = config.document.url
@@ -269,7 +266,7 @@
     function configureBinaryOpen(config, openBuffer) {
         pendingOpenBuffer = null
         if (!config.localOpenFromBinary) return
-        if (!openBuffer) throw new Error('本地文档缺少二进制内容')
+        if (!openBuffer) throw new Error('Binary buffer is required for local binary document opening')
         pendingOpenBuffer = openBuffer
     }
 
@@ -325,7 +322,7 @@
 
     function init() {
         if (typeof DocsAPI === 'undefined') {
-            alert('OnlyOffice API 未加载，请检查文档服务器地址')
+            alert('ONLYOFFICE API script not loaded. Please verify the vendor script path.')
             return
         }
         const params = getUrlParams()

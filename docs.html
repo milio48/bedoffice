@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ONLYOFFICE × bedoffice | Developer Documentation & Embed Guide</title>
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon"/>
+    
+    <!-- Highlight.js Syntax Highlighting CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --bg-sidebar: #f8fafc;
+            --bg-code: #22272e;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --border-subtle: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --badge-bg: #e0e7ff;
+            --badge-text: #3730a3;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Top Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px;
+            cursor: pointer;
+            color: #334155;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: #f1f5f9;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand-logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .brand-title .oo { color: #0f172a; }
+        .brand-title .x { color: #94a3b8; font-weight: 400; font-size: 0.8rem; }
+        .brand-title .bo { color: var(--accent); }
+        .brand-badge {
+            font-size: 0.7rem;
+            padding: 1px 6px;
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: #475569;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-nav.secondary {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            color: #334155;
+        }
+
+        .btn-nav.secondary:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-nav.primary {
+            background: var(--accent);
+            color: #ffffff;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-nav.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            margin-top: 56px;
+            min-height: calc(100vh - 56px);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 20px 12px;
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 90;
+            transition: transform 0.25s ease;
+        }
+
+        .sidebar-group {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            padding-left: 10px;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 7px 10px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 0.86rem;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-link:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .sidebar-link.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Sidebar Backdrop on Mobile */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 80;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 250px;
+            flex: 1;
+            max-width: 920px;
+            padding: 32px 32px 80px;
+            width: 100%;
+        }
+
+        .section {
+            margin-bottom: 48px;
+            scroll-margin-top: 76px;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .lead {
+            font-size: clamp(0.92rem, 2vw, 1.02rem);
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        h2 {
+            font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+            margin-top: 28px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 6px;
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        p, ul, ol {
+            color: #334155;
+            font-size: 0.92rem;
+            margin-bottom: 14px;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        /* Code Box */
+        .code-box {
+            background: var(--bg-code);
+            border-radius: var(--radius-md);
+            margin: 14px 0 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #373e47;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 14px;
+            background: #1c2128;
+            border-bottom: 1px solid #373e47;
+            font-size: 0.76rem;
+            color: #adbac7;
+            font-family: var(--font-mono);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #444c56;
+            color: #adbac7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .copy-btn:hover {
+            background: #373e47;
+            color: #ffffff;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+        }
+
+        pre code.hljs {
+            padding: 14px;
+            font-family: var(--font-mono);
+            font-size: 0.84rem;
+            line-height: 1.45;
+            background: transparent;
+        }
+
+        code:not(pre code) {
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 14px 0 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+            min-width: 500px;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: #475569;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Callouts */
+        .callout {
+            border-left: 4px solid var(--accent);
+            background: var(--accent-soft);
+            padding: 14px 16px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            color: #1e3a8a;
+        }
+
+        .callout strong {
+            display: block;
+            margin-bottom: 2px;
+            color: #1e40af;
+        }
+
+        /* Showcase Grid */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0 24px;
+        }
+
+        .showcase-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.15s ease;
+            cursor: zoom-in;
+        }
+
+        .showcase-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+
+        .showcase-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: transform 0.2s ease;
+        }
+
+        .showcase-card:hover img {
+            transform: scale(1.01);
+        }
+
+        /* Image Fullscreen Modal */
+        #imageModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: zoom-out;
+        }
+
+        #imageModal.show {
+            display: flex;
+            animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-inner {
+            position: relative;
+            max-width: 95vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: default;
+        }
+
+        #modalImg {
+            max-width: 100%;
+            max-height: 82vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #modalCaption {
+            color: #f8fafc;
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-top: 12px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 4px 14px;
+            border-radius: 999px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            z-index: 1010;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.08);
+        }
+
+        .showcase-card .info {
+            padding: 10px 14px;
+        }
+
+        .showcase-card .title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .showcase-card .desc {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Footer */
+        .docs-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+            margin-top: 48px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .docs-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .docs-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .menu-toggle { display: inline-flex; }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: var(--shadow-md);
+            }
+            .sidebar-backdrop.show {
+                display: block;
+            }
+            .content {
+                margin-left: 0;
+                padding: 24px 16px 64px;
+            }
+            .btn-nav span.nav-text {
+                display: none;
+            }
+            .showcase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="index.html" class="brand">
+            <img src="./assets/favicon.ico" alt="Logo" class="brand-logo"/>
+            <div class="brand-title">
+                <span class="oo">ONLYOFFICE</span>
+                <span class="x">×</span>
+                <span class="bo">bedoffice</span>
+                <span class="brand-badge">Docs</span>
+            </div>
+        </a>
+    </div>
+    <div class="nav-actions">
+        <a href="index.html" class="btn-nav secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            <span class="nav-text">Live Web App</span>
+        </a>
+        <a href="https://github.com/milio48/bedoffice" target="_blank" rel="noopener" class="btn-nav primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
+            <span class="nav-text">GitHub</span>
+        </a>
+    </div>
+</header>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-group">
+            <div class="sidebar-title">Getting Started</div>
+            <a href="#quickstart" class="sidebar-link active">Quick Start</a>
+            <a href="#architecture" class="sidebar-link">Architecture & WASM</a>
+        </div>
+        <div class="sidebar-group">
+            <div class="sidebar-title">Integration & IPC</div>
+            <a href="#protocol" class="sidebar-link">postMessage Protocol</a>
+            <a href="#docconfig" class="sidebar-link">docConfig Reference</a>
+            <a href="#filestream" class="sidebar-link">File Stream Extraction</a>
+            <a href="#recipes" class="sidebar-link">Complete API Recipes</a>
+        </div>
+        <div class="sidebar-group">
+            <div class="sidebar-title">Interface Showcase</div>
+            <a href="#showcase" class="sidebar-link">Screenshots & Editors</a>
+        </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+        <section id="quickstart" class="section">
+            <h1>Developer Integration Guide</h1>
+            <p class="lead">Embed the client-side ONLYOFFICE WASM suite into any web app via <strong>bedoffice</strong> iframe bridge with zero backend servers and instant byte stream extraction.</p>
+
+            <div class="callout">
+                <strong>Zero Document Server Required</strong>
+                Document conversion, editing, and rendering run entirely inside the client browser using ONLYOFFICE WebAssembly (<code>x2t.wasm</code>). Files never leave the user's browser.
+            </div>
+
+            <h2>Quick Start (Vanilla JavaScript)</h2>
+            <p>Embed the editor via an <code>&lt;iframe&gt;</code> using the hosted bridge (or your self-hosted path) and inject your document configuration with <code>postMessage</code>:</p>
+
+            <div class="code-box">
+                <div class="code-header">
+                    <span>index.html</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code class="language-html">&lt;!-- Use the hosted CDN bridge or your own self-hosted onlyoffice.html --&gt;
+&lt;iframe id="office-frame" 
+        src="https://milio48.github.io/bedoffice/onlyoffice.html" 
+        style="width: 100%; height: 100vh; border: none;"&gt;&lt;/iframe&gt;
+
+&lt;script&gt;
+const iframe = document.getElementById('office-frame');
+
+window.addEventListener('message', (event) => {
+    const data = event.data;
+    if (!data) return;
+
+    // 1. When iframe bridge is ready, inject docConfig
+    if (data.type === 'onlyoffice-ready') {
+        iframe.contentWindow.postMessage({
+            type: 'onlyoffice-config',
+            docConfig: {
+                document: {
+                    url: 'https://example.com/sample.docx',
+                    title: 'Sample Document.docx',
+                    fileType: 'docx'
+                },
+                editorConfig: { 
+                    lang: 'en-US', 
+                    mode: 'edit' 
+                }
+            }
+        }, '*');
+    }
+
+    // 2. Receive edited file byte stream (ArrayBuffer)
+    if (data.type === 'onlyoffice-saved' && data.ok) {
+        const fileBlob = new Blob([data.buffer]);
+        console.log(`Received saved file (${fileBlob.size} bytes):`, data.fileName);
+        // Upload fileBlob to your backend or save locally!
+    }
+});
+
+// To programmatically trigger a save:
+function saveDocument() {
+    iframe.contentWindow.postMessage({ 
+        type: 'onlyoffice-save', 
+        requestId: 'req_' + Date.now() 
+    }, '*');
+}
+&lt;/script&gt;</code></pre>
+            </div>
+        </section>
+
+        <section id="architecture" class="section">
+            <h2>Architecture & Window Hierarchy</h2>
+            <p>The system operates in a three-tier communication hierarchy:</p>
+            <ul>
+                <li><strong>Host Application (Your App)</strong>: Issues save/export commands, controls permissions, and receives binary <code>ArrayBuffer</code> streams.</li>
+                <li><strong>onlyoffice.html (Integration Bridge)</strong>: Manages the DocsAPI instance, handles window messaging, and suppresses browser auto-downloads.</li>
+                <li><strong>ONLYOFFICE WASM Core</strong>: Executes <code>x2t.wasm</code> in-memory to convert, format, and generate binary Office files.</li>
+            </ul>
+        </section>
+
+        <section id="protocol" class="section">
+            <h2>postMessage IPC Protocol Reference</h2>
+
+            <h3>Events Emitted by <code>onlyoffice.html</code></h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Payload</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>onlyoffice-ready</code></td>
+                            <td><code>none</code></td>
+                            <td>Sent when the bridge iframe is mounted and ready for <code>onlyoffice-config</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-document-ready</code></td>
+                            <td><code>none</code></td>
+                            <td>Fired when ONLYOFFICE finishes rendering the document on canvas.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-saved</code></td>
+                            <td><code>ok: bool, buffer: ArrayBuffer, fileName: str, requestId?: str</code></td>
+                            <td>Delivers the raw binary stream after save or export.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-open-error</code></td>
+                            <td><code>error: string</code></td>
+                            <td>Triggered if document loading fails.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-state-change</code></td>
+                            <td><code>modified: boolean</code></td>
+                            <td>Emitted when document changes unsaved status.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Commands Dispatched to <code>onlyoffice.html</code></h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Command Name</th>
+                            <th>Parameters</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>onlyoffice-config</code></td>
+                            <td><code>docConfig: object, openBuffer?: ArrayBuffer</code></td>
+                            <td>Initializes and opens the document editor.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-save</code></td>
+                            <td><code>requestId?: string, format?: string</code></td>
+                            <td>Instructs WASM engine to convert and extract raw file bytes.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-set-name</code></td>
+                            <td><code>name: string</code></td>
+                            <td>Updates the active document title.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="docconfig" class="section">
+            <h2>docConfig Reference</h2>
+            <p>The configuration object follows standard ONLYOFFICE conventions:</p>
+            <div class="code-box">
+                <div class="code-header">
+                    <span>docConfig Schema</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code class="language-json">{
+  "document": {
+    "url": "https://example.com/file.docx",
+    "title": "Quarterly Report.docx",
+    "fileType": "docx",
+    "key": "unique_doc_id_123",
+    "permissions": {
+      "edit": true,
+      "download": true,
+      "print": true
+    }
+  },
+  "editorConfig": {
+    "mode": "edit",
+    "lang": "en-US",
+    "user": {
+      "id": "usr_01",
+      "name": "Alex Developer"
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="filestream" class="section">
+            <h2>File Stream Extraction</h2>
+            <p>Because there is no backend Document Server to handle save callbacks, <strong>bedoffice</strong> intercepts <code>x2t.downloadFile</code> inside the WebAssembly layer. When saving or exporting, the raw binary byte stream is returned as an <code>ArrayBuffer</code> inside the <code>onlyoffice-saved</code> event, allowing host applications to save files directly into custom databases, S3 buckets, or local storage without opening native browser download popups.</p>
+        </section>
+
+        <section id="recipes" class="section">
+            <h2>Complete API Recipes (Vanilla JS)</h2>
+            <p>Practical recipes for every event and command in the bedoffice bridge:</p>
+
+            <h3>1. Promise-based Save & Format Export</h3>
+            <p>Request an asynchronous save with promise matching, or export to a different format (e.g. DOCX ➔ PDF):</p>
+            <div class="code-box">
+                <div class="code-header">
+                    <span>save-and-export.js</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code class="language-javascript">/**
+ * Saves or exports the active document and returns a Promise resolving to a Blob.
+ * @param {HTMLIFrameElement} iframeEl
+ * @param {'docx'|'xlsx'|'pptx'|'pdf'} [exportFormat]
+ * @returns {Promise&lt;Blob&gt;}
+ */
+function requestDocumentSave(iframeEl, exportFormat) {
+    return new Promise((resolve, reject) => {
+        const requestId = 'req_' + Math.random().toString(36).slice(2, 9);
+        const timeout = setTimeout(() => {
+            window.removeEventListener('message', onSaved);
+            reject(new Error('Save operation timed out'));
+        }, 30000);
+
+        function onSaved(event) {
+            const data = event.data;
+            if (data && data.type === 'onlyoffice-saved' && data.requestId === requestId) {
+                clearTimeout(timeout);
+                window.removeEventListener('message', onSaved);
+                if (data.ok && data.buffer) {
+                    resolve(new Blob([data.buffer]));
+                } else {
+                    reject(new Error(data.error || 'Failed to save document'));
+                }
+            }
+        }
+
+        window.addEventListener('message', onSaved);
+        iframeEl.contentWindow.postMessage({
+            type: 'onlyoffice-save',
+            requestId: requestId,
+            format: exportFormat // Omit for native format, or specify 'pdf', etc.
+        }, '*');
+    });
+}
+
+// Example usage:
+// const pdfBlob = await requestDocumentSave(iframe, 'pdf');</code></pre>
+            </div>
+
+            <h3>2. Open from In-Memory Binary Buffer (`ArrayBuffer`)</h3>
+            <p>For opening files directly from memory, IndexedDB, or file upload input without generating a web URL:</p>
+            <div class="code-box">
+                <div class="code-header">
+                    <span>open-binary.js</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code class="language-javascript">async function openLocalBinaryFile(iframeEl, file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const ext = file.name.split('.').pop().toLowerCase();
+
+    const docConfig = {
+        document: {
+            title: file.name,
+            fileType: ext,
+            key: 'doc_' + Date.now(),
+            permissions: { edit: true, download: true, print: true }
+        },
+        localOpenFromBinary: true, // Instructs bridge to load from memory buffer
+        editorConfig: { lang: 'en-US', mode: 'edit' }
+    };
+
+    // Pass openBuffer in the message transfer list for zero-copy performance
+    iframeEl.contentWindow.postMessage({
+        type: 'onlyoffice-config',
+        docConfig: docConfig,
+        openBuffer: arrayBuffer
+    }, '*', [arrayBuffer]);
+}</code></pre>
+            </div>
+
+            <h3>3. Tracking Unsaved Modifications (Dirty State)</h3>
+            <p>Listen for unsaved changes to prompt users before navigating away:</p>
+            <div class="code-box">
+                <div class="code-header">
+                    <span>state-change.js</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code class="language-javascript">let isDocumentDirty = false;
+
+window.addEventListener('message', (event) => {
+    const data = event.data;
+    if (!data) return;
+
+    if (data.type === 'onlyoffice-state-change') {
+        isDocumentDirty = data.modified;
+        console.log('Unsaved changes:', isDocumentDirty);
+    }
+});
+
+window.addEventListener('beforeunload', (e) => {
+    if (isDocumentDirty) e.preventDefault();
+});</code></pre>
+            </div>
+
+            <h3>4. Dynamic Renaming, Save-As & Close Events</h3>
+            <div class="code-box">
+                <div class="code-header">
+                    <span>event-handlers.js</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code class="language-javascript">// 1. Programmatically rename document header
+function renameActiveDocument(iframeEl, newTitle) {
+    iframeEl.contentWindow.postMessage({
+        type: 'onlyoffice-set-name',
+        name: newTitle
+    }, '*');
+}
+
+// 2. Listen for editor events (Rename, Save-As Copy, Close request)
+window.addEventListener('message', (event) => {
+    const d = event.data;
+    if (!d) return;
+
+    switch (d.type) {
+        case 'onlyoffice-rename':
+            console.log('User renamed document to:', d.title);
+            break;
+
+        case 'onlyoffice-saveas':
+            if (d.ok && d.buffer) {
+                console.log('User created copy:', d.fileType, new Blob([d.buffer]));
+            }
+            break;
+
+        case 'onlyoffice-request-close':
+            console.log('User clicked editor close button');
+            // Hide iframe or navigate back
+            break;
+    }
+});</code></pre>
+            </div>
+        </section>
+
+        <section id="showcase" class="section">
+            <h2>Interface Showcase</h2>
+            <p>ONLYOFFICE runs completely in-browser with rich format rendering:</p>
+
+            <div class="showcase-grid">
+                <div class="showcase-card">
+                    <img src="docs/imgs/img_1.png" alt="Word Document Editor" loading="lazy">
+                    <div class="info">
+                        <div class="title">Word Document Editor</div>
+                        <div class="desc">DOCX, DOC, ODT, RTF, TXT, HTML</div>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <img src="docs/imgs/img_2.png" alt="Excel Spreadsheet Editor" loading="lazy">
+                    <div class="info">
+                        <div class="title">Excel Spreadsheet Editor</div>
+                        <div class="desc">XLSX, XLS, ODS, CSV, Formulas & Charts</div>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <img src="docs/imgs/img_3.png" alt="PowerPoint Presentation Editor" loading="lazy">
+                    <div class="info">
+                        <div class="title">PowerPoint Presentation Editor</div>
+                        <div class="desc">PPTX, PPT, ODP, PPSX Slide Deck</div>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <img src="docs/imgs/img_5.png" alt="PDF Editor & Form Filling" loading="lazy">
+                    <div class="info">
+                        <div class="title">PDF Editor & Form Filling</div>
+                        <div class="desc">PDF Annotation, Text Editing & Form Fields</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="docs-footer">
+            Powered by <a href="https://www.onlyoffice.com/" target="_blank" rel="noopener">ONLYOFFICE</a> WASM engine & <a href="index.html">bedoffice</a> bridge · Forked & enhanced from <a href="https://github.com/fernfei/OnlyofficePersonal" target="_blank" rel="noopener">fernfei/OnlyofficePersonal</a>.
+        </footer>
+    </main>
+</div>
+
+<!-- Fullscreen Image Modal / Lightbox -->
+<div id="imageModal" onclick="closeImageModal()">
+    <button class="modal-close" onclick="closeImageModal()" aria-label="Close Preview">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-inner" onclick="event.stopPropagation()">
+        <img id="modalImg" src="" alt="Screenshot Preview">
+        <div id="modalCaption"></div>
+    </div>
+</div>
+
+<script>
+    // Initialize Highlight.js
+    hljs.highlightAll();
+
+    function copyCode(btn) {
+        const code = btn.parentElement.nextElementSibling.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            btn.innerText = 'Copied!';
+            setTimeout(() => btn.innerText = 'Copy', 2000);
+        });
+    }
+
+    // Fullscreen Image Lightbox
+    const imageModal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalCaption = document.getElementById('modalCaption');
+
+    function openImageModal(src, title) {
+        modalImg.src = src;
+        modalCaption.textContent = title;
+        imageModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        imageModal.classList.remove('show');
+        document.body.style.overflow = '';
+        setTimeout(() => { modalImg.src = ''; }, 200);
+    }
+
+    document.querySelectorAll('.showcase-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const img = card.querySelector('img');
+            const title = card.querySelector('.title')?.textContent || img.alt || '';
+            if (img && img.src) {
+                openImageModal(img.src, title);
+            }
+        });
+    });
+
+    // Close modal on Escape key
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && imageModal.classList.contains('show')) {
+            closeImageModal();
+        }
+    });
+
+    // Mobile Drawer Navigation
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+
+    function toggleMenu() {
+        sidebar.classList.toggle('open');
+        backdrop.classList.toggle('show');
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    backdrop.addEventListener('click', toggleMenu);
+
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 960) {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('show');
+            }
+        });
+    });
+
+    // Active link highlighting on scroll
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('.section');
+        const scrollPos = window.scrollY + 90;
+
+        sections.forEach(sec => {
+            if (scrollPos >= sec.offsetTop && scrollPos < sec.offsetTop + sec.offsetHeight) {
+                const id = sec.getAttribute('id');
+                document.querySelectorAll('.sidebar-link').forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

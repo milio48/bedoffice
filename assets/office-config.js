@@ -7,10 +7,10 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
     'use strict'
 
-    const DEFAULT_LANG = 'zh-CN'
+    const DEFAULT_LANG = 'en-US'
     const DEFAULT_MODE = 'edit'
     const LOCAL_USER_ID = 'local-user'
-    const LOCAL_USER_NAME = '本地用户'
+    const LOCAL_USER_NAME = 'Local User'
     const EMPTY_UPDATED_AT = 0
     const LOCAL_BLOB_URL_PREFIX = 'blob:'
 
@@ -18,10 +18,20 @@
     const SLIDE_EXTENSIONS = new Set(['ppt', 'pptx', 'odp', 'pps', 'ppsx'])
     const PDF_EXTENSIONS = new Set(['pdf', 'oxps', 'xps', 'djvu'])
 
+    /**
+     * Normalizes a file extension string to lowercase.
+     * @param {string} ext
+     * @returns {string}
+     */
     function normalizeExtension(ext) {
         return String(ext || '').toLowerCase()
     }
 
+    /**
+     * Resolves the ONLYOFFICE documentType from a file extension.
+     * @param {string} ext
+     * @returns {'word' | 'cell' | 'slide' | 'pdf'}
+     */
     function documentTypeOf(ext) {
         const normalized = normalizeExtension(ext)
         if (CELL_EXTENSIONS.has(normalized)) return 'cell'
@@ -30,10 +40,21 @@
         return 'word'
     }
 
+    /**
+     * Checks if a URL is a browser local blob URL.
+     * @param {string} url
+     * @returns {boolean}
+     */
     function isLocalBlobUrl(url) {
         return String(url || '').startsWith(LOCAL_BLOB_URL_PREFIX)
     }
 
+    /**
+     * Determines whether PDF should use binary buffer loading.
+     * @param {string} documentType
+     * @param {string} blobUrl
+     * @returns {boolean}
+     */
     function shouldOpenFromBinary(documentType, blobUrl) {
         return documentType === 'pdf' && isLocalBlobUrl(blobUrl)
     }
@@ -62,10 +83,13 @@
         return { edit: true, download: true, print: true }
     }
 
-    function localUser() {
-        return { id: LOCAL_USER_ID, name: LOCAL_USER_NAME }
+    function localUser(userName) {
+        return { id: LOCAL_USER_ID, name: userName || LOCAL_USER_NAME }
     }
 
+    /**
+     * Builds the document config section.
+     */
     function buildDocumentConfig(record, blobUrl) {
         const documentType = documentTypeOf(record.fileType)
         const openFromBinary = shouldOpenFromBinary(documentType, blobUrl)
@@ -85,13 +109,28 @@
         return config
     }
 
+    /**
+     * Builds the full ONLYOFFICE docConfig object.
+     * @param {Object} options
+     * @param {Object} options.record - Document metadata ({ id, name, fileType, updatedAt })
+     * @param {string} [options.blobUrl] - Local blob or remote URL
+     * @param {string} [options.lang] - UI language (defaults to 'en-US')
+     * @param {string} [options.mode] - Editor mode ('edit' or 'view')
+     * @returns {Object} Full docConfig
+     */
     function buildOnlyofficeConfig(options) {
         const record = requireRecord(options)
         const documentType = documentTypeOf(record.fileType)
+        const lang = options.lang || DEFAULT_LANG
+        const mode = options.mode || DEFAULT_MODE
         const config = {
             document: buildDocumentConfig(record, options.blobUrl),
             documentType: documentType,
-            editorConfig: { mode: DEFAULT_MODE, lang: DEFAULT_LANG, user: localUser() }
+            editorConfig: { 
+                mode: mode, 
+                lang: lang, 
+                user: localUser(options.userName) 
+            }
         }
         if (shouldOpenFromBinary(documentType, options.blobUrl)) {
             config.localOpenFromBinary = true
@@ -101,6 +140,7 @@
 
     return {
         buildOnlyofficeConfig: buildOnlyofficeConfig,
-        documentTypeOf: documentTypeOf
+        documentTypeOf: documentTypeOf,
+        DEFAULT_LANG: DEFAULT_LANG
     }
 }))

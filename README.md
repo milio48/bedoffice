@@ -1,85 +1,96 @@
-# ONLYOFFICE Personal
+# ONLYOFFICE × bedoffice
 
-[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+<p align="center">
+  <strong>Client-Side ONLYOFFICE WASM Document Suite & bedoffice Embed Bridge</strong><br>
+  <em>Zero Server, 100% Privacy, Pure WebAssembly ONLYOFFICE Editor for Word, Excel, PowerPoint & PDF</em>
+</p>
 
-在浏览器里跑的离线版 ONLYOFFICE。基于 `x2t.wasm` 做文档转换，不需要 Document Server，也不需要任何后端——打开一个静态页面就能编辑 Word、Excel、PPT 和 PDF，文件全程留在本地。
+<p align="center">
+  <a href="LICENSE.txt"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"></a>
+  <a href="https://github.com/milio48/bedoffice"><img src="https://img.shields.io/badge/engine-ONLYOFFICE_WASM-purple.svg" alt="ONLYOFFICE WASM Core"></a>
+  <a href="docs/integration-guide.md"><img src="https://img.shields.io/badge/docs-integration_guide-success.svg" alt="Docs"></a>
+</p>
 
-[English](README_EN.md) ｜ [在线体验](https://fernfei.github.io/office.html)
+---
 
-![主界面](docs/imgs/img.png)
+## ⚡ Highlights
 
-## 特点
+- **🔒 100% Client-Side Privacy**: Document editing, conversion, and exporting happen entirely in the browser using `x2t.wasm`. No files or keystrokes are ever sent to an external server.
+- **📄 Full Format Support**: Native compatibility with `.docx`, `.xlsx`, `.pptx`, `.pdf`, ODF (`.odt`, `.ods`, `.odp`), `.csv`, and form filling.
+- **🔌 Seamless Embed Protocol**: `onlyoffice.html` exposes a lightweight `postMessage` IPC protocol that delivers raw `ArrayBuffer` byte streams directly into your host application.
+- **⚡ Static & Serverless**: Ready to deploy on GitHub Pages, Cloudflare Pages, Vercel, S3, or Nginx with zero backend configuration.
+- **🚀 Web App & Developer Hub**: Includes an end-user web app (`index.html`) and an interactive developer documentation portal (`docs.html`).
 
-- **无服务器**：文档的打开、编辑、导出都在浏览器内完成，不上传任何文件。
-- **格式支持**：docx / xlsx / pptx 及对应的 ODF、CSV 等，PDF 支持注释、表单填写和文本编辑。
-- **可集成**：`onlyoffice.html` 提供一套 postMessage 协议，能嵌进你自己的系统，取回编辑后的文件流。
-- **纯静态**：任意静态服务器都能托管，也可以直接打包进前端工程。
+---
 
-基于 ONLYOFFICE 9.3 编译产物，**内置 `x2t.wasm` 已升级为最新的 9.4 版本**。
+## 🚀 Quick Start / Embed in 5 Lines of Code
 
-## 快速开始
+Embed the editor into any web application using standard `<iframe>` and `postMessage` (using the hosted CDN bridge or your self-hosted URL):
 
-在项目根目录起一个静态服务器，然后访问 `office.html`：
+```html
+<!-- Use hosted CDN bridge or your own self-hosted onlyoffice.html -->
+<iframe id="editor" 
+        src="https://milio48.github.io/bedoffice/onlyoffice.html" 
+        style="width: 100%; height: 100vh; border: none;"></iframe>
 
-```bash
-# Python
-python -m http.server 8000
+<script>
+const iframe = document.getElementById('editor');
 
-# 或 Node.js
-npx http-server -p 8000
+window.addEventListener('message', (event) => {
+  const data = event.data;
+  if (!data) return;
 
-# 或 PHP
-php -S localhost:8000
+  // 1. Send configuration when iframe is ready
+  if (data.type === 'onlyoffice-ready') {
+    iframe.contentWindow.postMessage({
+      type: 'onlyoffice-config',
+      docConfig: {
+        document: {
+          url: 'https://example.com/document.docx',
+          title: 'Document.docx',
+          fileType: 'docx'
+        },
+        editorConfig: { lang: 'en-US', mode: 'edit' }
+      }
+    }, '*');
+  }
+
+  // 2. Receive edited file stream (ArrayBuffer)
+  if (data.type === 'onlyoffice-saved' && data.ok) {
+    const blob = new Blob([data.buffer]);
+    console.log('Saved document bytes:', blob.size);
+  }
+});
+</script>
 ```
 
-浏览器打开 <http://localhost:8000/office.html>。
+---
 
-`office.html` 是一个演示入口：新建文档、打开本地文件或网络链接、把最近文件存到浏览器 IndexedDB，编辑后可保存回本地或下载。它本身也是集成方式的完整示例。
+## 📚 Documentation
 
-## 界面
+- 📖 **[Integration Guide](docs/integration-guide.md)**: Full API specification, `docConfig` schema, `postMessage` protocol, and React / Vue / Svelte components.
+- 🔬 **[File Stream Architecture](docs/file-stream-architecture.md)**: Deep dive into WASM `x2t.downloadFile` interception and zero-backend buffer extraction.
 
-Word 文档
+---
 
-![Word 编辑器](docs/imgs/img_1.png)
-
-Excel 表格
-
-![Excel 编辑器](docs/imgs/img_2.png)
-
-PowerPoint 演示
-
-![PowerPoint 编辑器](docs/imgs/img_3.png)
-
-PDF 编辑
-
-![PDF 编辑器](docs/imgs/img_5.png)
-
-## 集成到自己的系统
-
-把仓库整体（`onlyoffice.html`、产物目录 `9.3.0.134-*`、`assets/`、`blank/`）放到前端工程的静态目录下，用 iframe 嵌入 `onlyoffice.html`，通过 postMessage 注入文档、取回文件流。
-
-- **[使用文档](docs/使用文档.md)**：三种集成方式、docConfig 配置、消息协议、保存文件流、文件名与重命名、另存为、连接器（Automation API），以及一份 Vue 组件封装。
-- **[文件流提取原理](docs/集成教程-文件流提取.md)**：离线版没有保存回调，这篇讲清楚字节是怎么从 `x2t.downloadFile` 里取出来的。
-- **[部署优化 - 资源压缩](docs/部署优化-资源压缩.md)**：`x2t.wasm` 有 40M，预压缩 + 强缓存能把传输体积降到 6.6M（-84%），附 `precompress.sh` 用法和 Nginx 配置。
-
-## 目录结构
+## 📁 Repository Structure
 
 ```
-OnlyofficePersonal/
-├── 9.3.0.134-*/          # ONLYOFFICE 编译产物（web-apps / sdkjs / fonts）
-├── assets/               # favicon、空白 PDF 等静态资源
-├── blank/                # 新建文档用的空白模板
-├── docs/                 # 文档与截图
-├── office.html           # 演示入口（独立使用）
-└── onlyoffice.html       # 集成入口（iframe + postMessage）
+bedoffice/
+├── index.html         # Standalone Web App for End-Users
+├── docs.html          # Interactive Developer Documentation & Embed Guide
+├── onlyoffice.html    # Core Iframe Integration Bridge (postMessage IPC)
+├── assets/            # Config helper (office-config.js), favicon, PDF templates
+├── blank/             # Blank templates for new documents (DOCX, XLSX)
+├── docs/              # In-depth technical guides (Markdown)
+├── LICENSE.txt        # AGPL-3.0 License
+└── README.md          # Official documentation
 ```
 
-## 许可证
+---
 
-[AGPL-3.0](LICENSE)。ONLYOFFICE 相关组件版权归 [ONLYOFFICE](https://www.onlyoffice.com/) 所有。
+## 📜 License & Credits
 
-## 交流
-
-ONLYOFFICE 技术交流群：<https://qm.qq.com/q/hVJ1Wbv8Na>
-
-![交流群](docs/imgs/img_4.png)
+- Licensed under **[AGPL-3.0](LICENSE.txt)**.
+- ONLYOFFICE core components and trademarks belong to **[Ascensio System SIA / ONLYOFFICE](https://www.onlyoffice.com/)**.
+- Forked & enhanced from [fernfei/OnlyofficePersonal](https://github.com/fernfei/OnlyofficePersonal).

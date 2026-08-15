@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ONLYOFFICE × bedoffice | Client-Side WASM Document Suite</title>
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon"/>
+    <script src="./assets/office-config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --word: #2563eb;
+            --cell: #16a34a;
+            --slide: #ea580c;
+            --pdf: #dc2626;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Top Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .brand-title .oo-name {
+            color: #0f172a;
+        }
+
+        .brand-title .cross {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+
+        .brand-title .bo-name {
+            color: var(--accent);
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .nav-btn.secondary {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            color: #334155;
+        }
+
+        .nav-btn.secondary:hover {
+            background: #f1f5f9;
+            border-color: var(--border-hover);
+        }
+
+        .nav-btn.primary {
+            background: var(--accent);
+            color: #ffffff;
+            border: 1px solid var(--accent);
+        }
+
+        .nav-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Main Container */
+        .main-content {
+            flex: 1;
+            max-width: 1040px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 16px 64px;
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.25rem, 4vw, 1.65rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+            max-width: 760px;
+            line-height: 1.5;
+        }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 14px;
+        }
+
+        .pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .pill-badge svg {
+            color: var(--accent);
+        }
+
+        /* Sections */
+        .section {
+            margin-top: 28px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* Create Document Cards */
+        .create-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .doc-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: var(--shadow-sm);
+            user-select: none;
+        }
+
+        .doc-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .doc-card:active {
+            transform: translateY(0);
+        }
+
+        .badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .badge.word  { background: var(--word); }
+        .badge.cell  { background: var(--cell); }
+        .badge.slide { background: var(--slide); }
+        .badge.pdf   { background: var(--pdf); font-size: 0.68rem; }
+
+        .doc-card-info {
+            min-width: 0;
+        }
+
+        .doc-card-info .name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-card-info .sub {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Open Panels Grid */
+        .open-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h3 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .drop-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--radius-sm);
+            padding: 20px 12px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: #fafafa;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .drop-zone svg {
+            color: #94a3b8;
+            transition: color 0.15s ease;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .drop-zone:hover svg,
+        .drop-zone.dragover svg {
+            color: var(--accent);
+        }
+
+        .url-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .url-row input {
+            flex: 1;
+            min-width: 0;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            color: var(--text);
+            background: var(--bg);
+            transition: border-color 0.15s ease;
+        }
+
+        .url-row input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #ffffff;
+        }
+
+        .url-tip {
+            font-size: 0.74rem;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s ease;
+        }
+
+        .btn:hover { background: var(--accent-hover); }
+
+        /* Recent Files Table */
+        .file-table {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .file-item + .file-item {
+            border-top: 1px solid var(--border);
+        }
+
+        .file-item:hover { background: #f8fafc; }
+
+        .file-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-item .name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text);
+        }
+
+        .file-item .sub {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .file-item .actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .mini-btn {
+            border: 1px solid var(--border);
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .mini-btn:hover {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        .mini-btn.del:hover {
+            background: #fee2e2;
+            color: var(--pdf);
+            border-color: #fca5a5;
+        }
+
+        .empty-tip {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            padding: 36px 16px;
+            background: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-md);
+        }
+
+        /* Fullscreen Editor Overlay */
+        #editorOverlay {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        #editorOverlay.show { display: flex; }
+
+        .editor-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 8px 14px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            height: 52px;
+            flex-shrink: 0;
+        }
+
+        .editor-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .editor-bar .title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #0f172a;
+        }
+
+        .editor-bar .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f59e0b;
+            display: none;
+            flex-shrink: 0;
+        }
+
+        .editor-bar .dot.show { display: block; }
+
+        .editor-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .bar-btn {
+            background: #ffffff;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bar-btn:hover { background: #f8fafc; border-color: var(--border-hover); }
+
+        .bar-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .bar-btn.primary:hover { background: var(--accent-hover); }
+        .bar-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #editorFrameBox {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #editorFrameBox iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 2000;
+            box-shadow: var(--shadow-lg);
+            white-space: nowrap;
+            max-width: 90vw;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        #toast.show { opacity: 1; }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            background: #ffffff;
+            padding: 16px 20px;
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .open-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .create-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav-btn span.label-text {
+                display: none;
+            }
+
+            .nav-btn {
+                padding: 7px 9px;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .bar-btn span.btn-text {
+                display: none;
+            }
+
+            .bar-btn {
+                padding: 6px 9px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 16px 12px 48px;
+            }
+
+            .create-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .doc-card {
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .badge {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+
+            .doc-card-info .name {
+                font-size: 0.82rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="brand">
+            <img src="./assets/favicon.ico" alt="ONLYOFFICE x bedoffice" class="brand-logo"/>
+            <div class="brand-text">
+                <div class="brand-title">
+                    <span class="oo-name">ONLYOFFICE</span>
+                    <span class="cross">×</span>
+                    <span class="bo-name">bedoffice</span>
+                </div>
+                <div class="brand-subtitle">WASM Client-Side Document Suite</div>
+            </div>
+        </a>
+        <div class="nav-actions">
+            <a href="docs.html" class="nav-btn secondary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+                <span class="label-text">Developer Docs</span>
+            </a>
+            <a href="https://github.com/milio48/bedoffice" target="_blank" rel="noopener" class="nav-btn primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
+                <span class="label-text">GitHub</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="hero">
+        <h1>Client-Side Office Suite</h1>
+        <p>100% private, serverless document editing powered by ONLYOFFICE WebAssembly (<code>x2t.wasm</code>). Your files never leave your browser.</p>
+        <div class="hero-badges">
+            <span class="pill-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Zero-Backend Privacy
+            </span>
+            <span class="pill-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                ONLYOFFICE WASM Core
+            </span>
+            <span class="pill-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                DOCX / XLSX / PPTX / PDF
+            </span>
+        </div>
+    </div>
+
+    <!-- Create Document Cards -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Create New Document</h2>
+        </div>
+        <div class="create-grid">
+            <div class="doc-card" onclick="createNewDoc('docx')">
+                <span class="badge word">W</span>
+                <div class="doc-card-info">
+                    <div class="name">Document</div>
+                    <div class="sub">Word · .docx</div>
+                </div>
+            </div>
+            <div class="doc-card" onclick="createNewDoc('xlsx')">
+                <span class="badge cell">X</span>
+                <div class="doc-card-info">
+                    <div class="name">Spreadsheet</div>
+                    <div class="sub">Excel · .xlsx</div>
+                </div>
+            </div>
+            <div class="doc-card" onclick="createNewDoc('pptx')">
+                <span class="badge slide">P</span>
+                <div class="doc-card-info">
+                    <div class="name">Presentation</div>
+                    <div class="sub">PowerPoint · .pptx</div>
+                </div>
+            </div>
+            <div class="doc-card" onclick="createNewDoc('pdf')">
+                <span class="badge pdf">PDF</span>
+                <div class="doc-card-info">
+                    <div class="name">PDF & Forms</div>
+                    <div class="sub">Editable · .pdf</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Document Section -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Open Document</h2>
+        </div>
+        <div class="open-grid">
+            <div class="panel">
+                <h3>Local Device File</h3>
+                <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Click to browse, or drop file here</span>
+                </div>
+                <input type="file" id="fileInput" hidden
+                       accept=".doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.pdf,.odt,.ods,.odp,.txt,.rtf"
+                       onchange="handleFileInput(event)">
+            </div>
+            <div class="panel">
+                <h3>Remote Web URL</h3>
+                <div class="url-row">
+                    <input type="url" id="urlInput" placeholder="https://example.com/document.docx"
+                           onkeydown="if(event.key==='Enter')openFromUrl()">
+                    <button class="btn" onclick="openFromUrl()">Open</button>
+                </div>
+                <p class="url-tip">Target URL must allow Cross-Origin Resource Sharing (CORS)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Documents Section -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Recent Documents (Local IndexedDB)</h2>
+        </div>
+        <div id="fileList"></div>
+    </section>
+</main>
+
+<footer class="footer">
+    Powered by <a href="https://www.onlyoffice.com/" target="_blank" rel="noopener">ONLYOFFICE</a> WASM engine & <a href="docs.html">bedoffice</a> integration bridge · Forked & enhanced from <a href="https://github.com/fernfei/OnlyofficePersonal" target="_blank" rel="noopener">fernfei/OnlyofficePersonal</a>.
+</footer>
+
+<!-- Fullscreen Editor Overlay -->
+<div id="editorOverlay">
+    <div class="editor-bar">
+        <div class="editor-title-wrap">
+            <span class="title" id="editorTitle">Document</span>
+            <span class="dot" id="modifiedDot" title="Unsaved changes"></span>
+        </div>
+        <div class="editor-actions">
+            <button class="bar-btn primary" id="saveBtn" onclick="saveCurrent()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span class="btn-text">Save</span>
+            </button>
+            <button class="bar-btn" onclick="downloadCurrent()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span class="btn-text">Download</span>
+            </button>
+            <button class="bar-btn" onclick="closeEditor()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span class="btn-text">Close</span>
+            </button>
+        </div>
+    </div>
+    <div id="editorFrameBox"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    'use strict'
+
+    function documentTypeOf(ext) {
+        return OfficeConfig.documentTypeOf(ext)
+    }
+
+    const BADGES = {
+        word: { cls: 'word', label: 'W' },
+        cell: { cls: 'cell', label: 'X' },
+        slide: { cls: 'slide', label: 'P' },
+        pdf: { cls: 'pdf', label: 'PDF' }
+    }
+
+    function extOf(name) {
+        const dot = name.lastIndexOf('.')
+        return dot > -1 ? name.substring(dot + 1).toLowerCase() : ''
+    }
+
+    function mimeOf(ext) {
+        return ({
+            docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            pdf: 'application/pdf'
+        })[ext] || 'application/octet-stream'
+    }
+
+    function formatSize(bytes) {
+        if (!bytes) return '0 B'
+        const units = ['B', 'KB', 'MB', 'GB']
+        const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1)
+        return (bytes / Math.pow(1024, i)).toFixed(i ? 1 : 0) + ' ' + units[i]
+    }
+
+    /* ---------- IndexedDB Storage ---------- */
+    const DB_NAME = 'bedoffice-storage'
+    const STORE = 'files'
+    let dbPromise = null
+
+    function openDB() {
+        if (dbPromise) return dbPromise
+        dbPromise = new Promise((resolve, reject) => {
+            const req = indexedDB.open(DB_NAME, 1)
+            req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: 'id' })
+            req.onsuccess = () => resolve(req.result)
+            req.onerror = () => reject(req.error)
+        })
+        return dbPromise
+    }
+
+    function idbRequest(mode, fn) {
+        return openDB().then(db => new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, mode)
+            const req = fn(tx.objectStore(STORE))
+            req.onsuccess = () => resolve(req.result)
+            req.onerror = () => reject(req.error)
+        }))
+    }
+
+    const idb = {
+        put: (record) => idbRequest('readwrite', s => s.put(record)),
+        get: (id) => idbRequest('readonly', s => s.get(id)),
+        del: (id) => idbRequest('readwrite', s => s.delete(id)),
+        all: () => idbRequest('readonly', s => s.getAll())
+    }
+
+    /* ---------- Recent Files List ---------- */
+    async function refreshFileList() {
+        const box = document.getElementById('fileList')
+        let files = []
+        try {
+            files = await idb.all()
+        } catch (e) {
+            box.innerHTML = '<p class="empty-tip">IndexedDB is not supported in this browser.</p>'
+            return
+        }
+        if (!files.length) {
+            box.innerHTML = '<p class="empty-tip">No recent documents. Created or opened files will appear here.</p>'
+            return
+        }
+        files.sort((a, b) => b.updatedAt - a.updatedAt)
+        box.innerHTML = '<div class="file-table">' + files.map(f => {
+            const badge = BADGES[documentTypeOf(f.fileType)] || BADGES.word
+            return `
+            <div class="file-item" onclick="openRecent('${f.id}')">
+                <span class="badge ${badge.cls}">${badge.label}</span>
+                <div class="info">
+                    <div class="name">${escapeHtml(f.name)}</div>
+                    <div class="sub">${formatSize(f.size)} · ${new Date(f.updatedAt).toLocaleString()}</div>
+                </div>
+                <div class="actions" onclick="event.stopPropagation()">
+                    <button class="mini-btn" onclick="downloadRecent('${f.id}')" title="Download to device">Download</button>
+                    <button class="mini-btn del" onclick="deleteRecent('${f.id}')" title="Delete from recent">Delete</button>
+                </div>
+            </div>`
+        }).join('') + '</div>'
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[c])
+    }
+
+    async function uniqueName(name) {
+        const files = await idb.all().catch(() => [])
+        const names = new Set(files.map(f => f.name))
+        if (!names.has(name)) return name
+        const dot = name.lastIndexOf('.')
+        const base = dot > -1 ? name.substring(0, dot) : name
+        const ext = dot > -1 ? name.substring(dot) : ''
+        for (let i = 1; ; i++) {
+            const candidate = `${base} (${i})${ext}`
+            if (!names.has(candidate)) return candidate
+        }
+    }
+
+    async function saveRecord(record) {
+        record.updatedAt = Date.now()
+        await idb.put(record)
+        refreshFileList()
+    }
+
+    /* ---------- Document Actions ---------- */
+    async function createNewDoc(ext) {
+        const defaultNames = { docx: 'New Document', xlsx: 'New Spreadsheet', pptx: 'New Presentation', pdf: 'New PDF' }
+        const record = {
+            id: 'f-' + Date.now(),
+            name: await uniqueName(`${defaultNames[ext] || 'Document'}.${ext}`),
+            fileType: ext,
+            size: 0,
+            blob: null
+        }
+        if (ext === 'pdf') {
+            try {
+                const resp = await fetch('./assets/empty.pdf')
+                record.blob = await resp.blob()
+                record.size = record.blob.size
+            } catch (e) {
+                toast('Failed to load blank PDF template')
+                return
+            }
+        }
+        await saveRecord(record)
+        openEditor(record)
+    }
+
+    async function importFile(file) {
+        const ext = extOf(file.name)
+        const record = {
+            id: 'f-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+            name: await uniqueName(file.name),
+            fileType: ext,
+            size: file.size,
+            blob: file
+        }
+        await saveRecord(record)
+        return record
+    }
+
+    async function handleFileInput(event) {
+        const file = event.target.files[0]
+        event.target.value = ''
+        if (file) openEditor(await importFile(file))
+    }
+
+    async function openFromUrl() {
+        const input = document.getElementById('urlInput')
+        const url = input.value.trim()
+        if (!url) return toast('Please enter a valid document URL')
+        toast('Downloading document...')
+        try {
+            const resp = await fetch(url)
+            if (!resp.ok) throw new Error('HTTP ' + resp.status)
+            const blob = await resp.blob()
+            const rawName = decodeURIComponent(url.split('?')[0].split('#')[0].split('/').pop() || '') || 'Remote Document.docx'
+            const record = {
+                id: 'f-' + Date.now(),
+                name: await uniqueName(rawName),
+                fileType: extOf(rawName) || 'docx',
+                size: blob.size,
+                blob: blob
+            }
+            await saveRecord(record)
+            input.value = ''
+            openEditor(record)
+        } catch (e) {
+            toast('Failed to load file: ' + e.message + ' (Check URL and CORS permissions)')
+        }
+    }
+
+    async function openRecent(id) {
+        const record = await idb.get(id)
+        if (record) openEditor(record)
+    }
+
+    async function downloadRecent(id) {
+        const record = await idb.get(id)
+        if (!record) return
+        if (!record.blob) return toast('This document is empty. Please open and save it first.')
+        triggerDownload(record.blob, record.name)
+    }
+
+    async function deleteRecent(id) {
+        await idb.del(id)
+        refreshFileList()
+    }
+
+    function triggerDownload(blob, name) {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = name
+        a.click()
+        setTimeout(() => URL.revokeObjectURL(url), 1500)
+    }
+
+    /* ---------- Editor Session ---------- */
+    let session = null
+
+    function openEditor(record) {
+        closeEditor(true)
+        const box = document.getElementById('editorFrameBox')
+        const frame = document.createElement('iframe')
+        frame.src = './onlyoffice.html'
+        box.appendChild(frame)
+
+        session = {
+            record: record,
+            frame: frame,
+            blobUrl: record.blob ? URL.createObjectURL(record.blob) : '',
+            modified: false,
+            saveSeq: 0,
+            pending: {}
+        }
+        document.getElementById('editorTitle').textContent = record.name
+        document.getElementById('modifiedDot').classList.remove('show')
+        document.getElementById('editorOverlay').classList.add('show')
+    }
+
+    async function binaryOpenBuffer(config, record) {
+        if (!config.localOpenFromBinary) return null
+        if (!record.blob) throw new Error('Local document has no binary content')
+        return record.blob.arrayBuffer()
+    }
+
+    async function pushConfig() {
+        const s = session
+        if (!s) return
+        const docConfig = OfficeConfig.buildOnlyofficeConfig({
+            record: s.record,
+            blobUrl: s.blobUrl,
+            lang: 'en-US'
+        })
+        const openBuffer = await binaryOpenBuffer(docConfig, s.record)
+        const message = {
+            type: 'onlyoffice-config',
+            docConfig: docConfig
+        }
+        const transfer = []
+        if (openBuffer) {
+            message.openBuffer = openBuffer
+            transfer.push(openBuffer)
+        }
+        s.frame.contentWindow.postMessage(message, '*', transfer)
+    }
+
+    function reportEditorOpenError(error) {
+        console.error(error)
+        toast('Open error: ' + ((error && error.message) || error))
+    }
+
+    function pushConfigSafely() {
+        pushConfig().catch(reportEditorOpenError)
+    }
+
+    function requestSave() {
+        const s = session
+        if (!s) return Promise.reject(new Error('Editor is not active'))
+        const requestId = 'save-' + (++s.saveSeq)
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                delete s.pending[requestId]
+                reject(new Error('Save operation timed out'))
+            }, 30000)
+            s.pending[requestId] = {
+                resolve: (blob) => { clearTimeout(timer); resolve(blob) },
+                reject: (err) => { clearTimeout(timer); reject(err) }
+            }
+            s.frame.contentWindow.postMessage(
+                { type: 'onlyoffice-save', requestId, format: s.record.fileType }, '*')
+        })
+    }
+
+    async function persistBlob(blob) {
+        const s = session
+        if (!s) return
+        s.record.blob = blob
+        s.record.size = blob.size
+        await saveRecord(s.record)
+        s.modified = false
+        document.getElementById('modifiedDot').classList.remove('show')
+    }
+
+    async function saveCurrent() {
+        const btn = document.getElementById('saveBtn')
+        btn.disabled = true
+        try {
+            await persistBlob(await requestSave())
+            toast('Document saved to local storage')
+        } catch (e) {
+            toast('Save error: ' + e.message)
+        } finally {
+            btn.disabled = false
+        }
+    }
+
+    async function downloadCurrent() {
+        try {
+            const blob = await requestSave()
+            await persistBlob(blob)
+            triggerDownload(new Blob([blob], { type: mimeOf(session.record.fileType) }), session.record.name)
+        } catch (e) {
+            toast('Download error: ' + e.message)
+        }
+    }
+
+    function closeEditor(silent) {
+        const s = session
+        if (!s) return
+        if (!silent && s.modified && !confirm('You have unsaved changes. Are you sure you want to close?')) return
+        Object.values(s.pending).forEach(p => p.reject(new Error('Editor closed')))
+        if (s.blobUrl) URL.revokeObjectURL(s.blobUrl)
+        s.frame.remove()
+        session = null
+        document.getElementById('editorOverlay').classList.remove('show')
+    }
+
+    /* ---------- Message Protocol Listener ---------- */
+    window.addEventListener('message', async (event) => {
+        const d = event.data
+        const s = session
+        if (!d || !s || event.source !== s.frame.contentWindow) return
+
+        switch (d.type) {
+            case 'onlyoffice-ready':
+                pushConfigSafely()
+                break
+            case 'onlyoffice-open-error':
+                toast('Open error: ' + (d.error || 'Unknown error'))
+                break
+            case 'onlyoffice-saved': {
+                const p = d.requestId && s.pending[d.requestId]
+                if (p) {
+                    delete s.pending[d.requestId]
+                    d.ok && d.buffer ? p.resolve(new Blob([d.buffer])) : p.reject(new Error(d.error || 'Save failed'))
+                } else if (d.ok && d.buffer) {
+                    await persistBlob(new Blob([d.buffer]))
+                    toast('Document auto-saved')
+                }
+                break
+            }
+            case 'onlyoffice-saveas':
+                if (d.ok && d.buffer) {
+                    const ext = d.fileType || s.record.fileType
+                    const base = s.record.name.replace(/\.[^.]+$/, '')
+                    triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), `${base}-copy.${ext}`)
+                }
+                break
+            case 'onlyoffice-rename':
+                if (d.title) {
+                    s.record.name = /\.[^.]+$/.test(d.title) ? d.title : `${d.title}.${s.record.fileType}`
+                    document.getElementById('editorTitle').textContent = s.record.name
+                    saveRecord(s.record)
+                }
+                break
+            case 'onlyoffice-state-change':
+                s.modified = !!d.modified
+                document.getElementById('modifiedDot').classList.toggle('show', s.modified)
+                break
+            case 'onlyoffice-request-close':
+                closeEditor()
+                break
+        }
+    })
+
+    window.addEventListener('beforeunload', (e) => {
+        if (session && session.modified) e.preventDefault()
+    })
+
+    /* ---------- Drag and Drop ---------- */
+    function setupDragAndDrop() {
+        const zone = document.getElementById('dropZone')
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
+        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
+        zone.addEventListener('drop', async e => {
+            e.preventDefault()
+            zone.classList.remove('dragover')
+            const files = [...e.dataTransfer.files]
+            if (!files.length) return
+            let last = null
+            for (const file of files) last = await importFile(file)
+            if (files.length === 1) openEditor(last)
+            else toast(`Added ${files.length} files to recent documents`)
+        })
+    }
+
+    let toastTimer = null
+    function toast(msg) {
+        const el = document.getElementById('toast')
+        el.textContent = msg
+        el.classList.add('show')
+        clearTimeout(toastTimer)
+        toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        refreshFileList()
+        setupDragAndDrop()
+    })
+</script>
+</body>
+</html>
