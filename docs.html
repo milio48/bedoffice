@@ -1176,6 +1176,49 @@ window.addEventListener('message', (event) => {
     }
 });</code></pre>
             </div>
+
+            <h3>5. Native Direct Disk I/O (File System Access API)</h3>
+            <p>Connect the editor directly to physical files on the user's hard disk with seamless in-place saving:</p>
+            <div class="code-box">
+                <div class="code-header">
+                    <span>native-disk-save.js</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code class="language-javascript">// 1. Pick a file from the user's computer
+const [fileHandle] = await window.showOpenFilePicker({
+    types: [{
+        description: 'Office Documents',
+        accept: {
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx']
+        }
+    }],
+    multiple: false
+});
+
+const file = await fileHandle.getFile();
+const buffer = await file.arrayBuffer();
+
+// 2. Transfer buffer to onlyoffice.html
+iframeEl.contentWindow.postMessage({
+    type: 'onlyoffice-config',
+    docConfig: {
+        document: { title: file.name, fileType: file.name.split('.').pop().toLowerCase() }
+    },
+    openBuffer: buffer
+}, '*', [buffer]);
+
+// 3. On save event, write directly back to the physical file on disk
+window.addEventListener('message', async (event) => {
+    if (event.data?.type === 'onlyoffice-saved' && event.data.ok) {
+        const writable = await fileHandle.createWritable();
+        await writable.write(event.data.buffer);
+        await writable.close();
+        console.log(`Directly saved ${fileHandle.name} in-place to local disk!`);
+    }
+});</code></pre>
+            </div>
         </section>
 
         <section id="playground" class="section">

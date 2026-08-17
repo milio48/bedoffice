@@ -201,6 +201,50 @@ iframe.contentWindow.postMessage({
 }, '*');
 ```
 
+### 5.4 Native Direct Disk I/O (File System Access API)
+
+Connect `onlyoffice.html` to physical files on the user's hard disk for direct in-place saving:
+
+```javascript
+// 1. Pick a physical file from the user's device
+const [fileHandle] = await window.showOpenFilePicker({
+    types: [{
+        description: 'Office Documents',
+        accept: {
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx']
+        }
+    }],
+    multiple: false
+});
+
+const file = await fileHandle.getFile();
+const buffer = await file.arrayBuffer();
+
+// 2. Transfer the buffer to onlyoffice.html
+iframe.contentWindow.postMessage({
+    type: 'onlyoffice-config',
+    docConfig: {
+        document: {
+            title: file.name,
+            fileType: file.name.split('.').pop().toLowerCase()
+        }
+    },
+    openBuffer: buffer
+}, '*', [buffer]);
+
+// 3. On save, write directly back to disk
+window.addEventListener('message', async (event) => {
+    if (event.data?.type === 'onlyoffice-saved' && event.data.ok) {
+        const writable = await fileHandle.createWritable();
+        await writable.write(event.data.buffer);
+        await writable.close();
+        console.log(`Directly updated ${fileHandle.name} on local hard drive!`);
+    }
+});
+```
+
 ---
 
 ## 6. Framework Integration Examples

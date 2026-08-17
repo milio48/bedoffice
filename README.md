@@ -16,10 +16,14 @@
 ## ⚡ Highlights
 
 - **🔒 100% Client-Side Privacy**: Document editing, conversion, and exporting happen entirely in the browser using `x2t.wasm`. No files or keystrokes are ever sent to an external server.
+- **💾 Native Direct Disk I/O (File System Access API)**: Open files directly from your PC/laptop storage and save changes in-place on `Ctrl+S` without duplicate file download prompts.
 - **📄 Full Format Support**: Native compatibility with `.docx`, `.xlsx`, `.pptx`, `.pdf`, ODF (`.odt`, `.ods`, `.odp`), `.csv`, and form filling.
+- **🛠️ DocBuilder Preset Modal**: Configure document title, author name, UI language (9 languages), measurement units, and editor mode before launching clean canvases.
+- **🚦 System & Client APIs Monitor**: Real-time browser readiness checklist verifying 7 modern client APIs (WASM, IndexedDB, Transferables, Blob URLs, Fetch, Storage Quota, and File System Access).
+- **📦 Dual Storage Management**: Visual badges distinguishing `Local Disk` files from `Browser DB` (IndexedDB) with persistent session permissions in Recent Documents.
 - **🔌 Seamless Embed Protocol**: `onlyoffice.html` exposes a lightweight `postMessage` IPC protocol that delivers raw `ArrayBuffer` byte streams directly into your host application.
 - **⚡ Static & Serverless**: Ready to deploy on GitHub Pages, Cloudflare Pages, Vercel, S3, or Nginx with zero backend configuration.
-- **🚀 Web App & Developer Hub**: Includes an end-user web app (`index.html`) and an interactive developer documentation portal (`docs.html`).
+- **🚀 Web App & Developer Hub**: Includes an end-user web app (`index.html`) and an interactive developer documentation portal (`docs.html`) with a live interactive playground.
 
 ---
 
