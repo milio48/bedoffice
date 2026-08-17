@@ -2075,31 +2075,56 @@
             if (session && session.modified) e.preventDefault()
         })
 
+        /* Global Instant Ctrl+S Shortcut */
+        window.addEventListener('keydown', async (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                if (session) {
+                    e.preventDefault()
+                    try {
+                        const blob = await requestSave()
+                        await persistBlob(blob)
+                    } catch (err) {
+                        console.warn('Instant Ctrl+S save:', err)
+                    }
+                }
+            }
+        })
+
         /* ---------- Drag and Drop ---------- */
         function setupDragAndDrop() {
             const zone = document.getElementById('dropZone')
+            window.addEventListener('dragover', e => e.preventDefault())
+            window.addEventListener('drop', e => e.preventDefault())
+
             zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
             zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
             zone.addEventListener('drop', async e => {
                 e.preventDefault()
                 zone.classList.remove('dragover')
-                const items = e.dataTransfer && e.dataTransfer.items
+
+                // Extract files and items synchronously before any await
+                const rawFiles = e.dataTransfer ? [...e.dataTransfer.files] : []
+                const rawItem = (e.dataTransfer && e.dataTransfer.items && e.dataTransfer.items[0]) || null
+
                 let fileHandle = null
-                if (items && items[0] && typeof items[0].getAsFileSystemHandle === 'function') {
+                if (rawItem && typeof rawItem.getAsFileSystemHandle === 'function') {
                     try {
-                        fileHandle = await items[0].getAsFileSystemHandle()
+                        fileHandle = await rawItem.getAsFileSystemHandle()
                     } catch (err) {}
                 }
-                const files = [...e.dataTransfer.files]
-                if (!files.length) return
-                let last = null
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i]
-                    const handle = (i === 0) ? fileHandle : null
-                    last = await importFile(file, handle)
+
+                if (!rawFiles.length && !fileHandle) return
+
+                let fileToOpen = rawFiles[0]
+                if (!fileToOpen && fileHandle) {
+                    fileToOpen = await fileHandle.getFile()
                 }
-                if (files.length === 1) openEditor(last, {}, fileHandle)
-                else toast(`Added ${files.length} files to recent documents`)
+
+                if (!fileToOpen) return
+
+                const record = await importFile(fileToOpen, fileHandle)
+                openEditor(record, {}, fileHandle)
+                toast(fileHandle ? `Opened local disk file: ${fileToOpen.name}` : `Opened file: ${fileToOpen.name}`)
             })
         }
 

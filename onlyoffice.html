@@ -59,16 +59,19 @@
         const frame = document.querySelector('#editor iframe')
         if (!frame || !frame.contentWindow) return false
         try {
-            const doc = frame.contentWindow.document
-            if (doc && !doc.dataset.bedofficeShortcuts) {
-                doc.dataset.bedofficeShortcuts = 'true'
-                doc.addEventListener('keydown', (e) => {
+            const win = frame.contentWindow
+            const doc = win.document
+            if (win && !win._bedofficeShortcuts) {
+                win._bedofficeShortcuts = true
+                const handleKey = (e) => {
                     if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
                         e.preventDefault()
                         e.stopPropagation()
                         onSaveDocument()
                     }
-                }, true)
+                }
+                win.addEventListener('keydown', handleKey, true)
+                if (doc) doc.addEventListener('keydown', handleKey, true)
                 return true
             }
         } catch (e) {
@@ -76,6 +79,13 @@
         }
         return false
     }
+
+    window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault()
+            onSaveDocument()
+        }
+    }, true)
 
     function onDocumentReady() {
         postToParent({ type: 'onlyoffice-document-ready' })
