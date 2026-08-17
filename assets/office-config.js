@@ -60,7 +60,7 @@
      * @returns {boolean}
      */
     function shouldOpenFromBinary(documentType, blobUrl) {
-        return documentType === 'pdf' && isLocalBlobUrl(blobUrl)
+        return false
     }
 
     function requireRecord(options) {
@@ -84,7 +84,7 @@
     }
 
     function documentPermissions() {
-        return { edit: true, download: true, print: true }
+        return { edit: true, download: true, print: true, fillForms: true, review: true, comment: true }
     }
 
     function localUser(userName) {
@@ -129,6 +129,10 @@
                 lang: lang, 
                 user: localUser(options.userName),
                 customization: {
+                    close: {
+                        visible: true,
+                        text: 'Back to Documents'
+                    },
                     goback: {
                         text: 'Back to Documents',
                         blank: false,

@@ -133,13 +133,8 @@
     }
 
     function openPendingBinaryDocument() {
-        if (!pendingOpenBuffer) return
-        if (!docEditor) throw new Error('Editor is not ready')
-        const buffer = pendingOpenBuffer
+        // Document loading is reliably handled via Blob URL in config.document.url
         pendingOpenBuffer = null
-        if (typeof docEditor.openDocument === 'function') {
-            docEditor.openDocument({ buffer: buffer })
-        }
     }
 
     function onAppReady() {
@@ -305,6 +300,12 @@
 
         config.editorConfig = config.editorConfig || {}
         config.editorConfig.customization = config.editorConfig.customization || {}
+        if (!config.editorConfig.customization.close) {
+            config.editorConfig.customization.close = {
+                visible: true,
+                text: 'Back to Documents'
+            }
+        }
         if (!config.editorConfig.customization.logo) {
             config.editorConfig.customization.logo = {
                 image: BEDOFFICE_LOGO_LIGHT,
