@@ -1899,13 +1899,13 @@
                         delete s.pending[d.requestId]
                         d.ok && d.buffer ? p.resolve(new Blob([d.buffer])) : p.reject(new Error(d.error || 'Save failed'))
                     } else if (d.ok && d.buffer) {
-                        const isDownload = d.isDownload || (d.fileType && d.fileType !== s.record.fileType)
-                        if (isDownload) {
-                            const ext = d.fileType || s.record.fileType || 'pdf'
+                        const isFormatExport = (d.fileType && d.fileType !== s.record.fileType)
+                        if (isFormatExport) {
+                            const ext = d.fileType || 'pdf'
                             const baseName = s.record.name.replace(/\.[^.]+$/, '')
                             const fileName = d.fileName || `${baseName}.${ext}`
                             triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), fileName)
-                            toast(`Downloaded ${fileName}`)
+                            toast(`Exported ${fileName}`)
                         } else {
                             await persistBlob(new Blob([d.buffer]))
                             toast('Document saved to local storage')

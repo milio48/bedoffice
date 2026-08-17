@@ -54,12 +54,37 @@
         return true
     }
 
+    function hookLogoClick() {
+        const frame = document.querySelector('#editor iframe')
+        if (!frame || !frame.contentWindow) return false
+        try {
+            const doc = frame.contentWindow.document
+            const logoEl = doc.querySelector('#header-logo') || doc.querySelector('.header-logo') || doc.querySelector('.extra #header-logo')
+            if (logoEl && !logoEl.dataset.bedofficeHooked) {
+                logoEl.dataset.bedofficeHooked = 'true'
+                logoEl.style.cursor = 'pointer'
+                logoEl.title = 'Back to Documents'
+                logoEl.addEventListener('click', (e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onRequestClose()
+                }, true)
+                return true
+            }
+        } catch (e) {
+            // Cross-origin fallback
+        }
+        return false
+    }
+
     function onDocumentReady() {
         postToParent({ type: 'onlyoffice-document-ready' })
         let attempts = 0
         const timer = setInterval(() => {
             attempts += 1
-            if (setStreamOnlyFlag() || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
+            const flagSet = setStreamOnlyFlag()
+            const logoHooked = hookLogoClick()
+            if ((flagSet && logoHooked) || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
         }, STREAM_FLAG_INTERVAL_MS)
     }
 
@@ -131,7 +156,7 @@
         postToParent({
             type: 'onlyoffice-saved',
             requestId: request && request.requestId,
-            isDownload: !request,
+            isExport: !!(request && request.format && request.format !== data.fileType),
             ok: true,
             buffer: buffer,
             fileType: data.fileType || '',
