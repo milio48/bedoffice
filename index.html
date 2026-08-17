@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ONLYOFFICE × bedoffice | Client-Side WASM Document Suite</title>
-    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"/>
     <script src="./assets/office-config.js"></script>
     <style>
         * {
@@ -510,105 +510,29 @@
             border-radius: var(--radius-md);
         }
 
-        /* Fullscreen Editor Overlay */
+        /* Fullscreen Editor Overlay (100% ONLYOFFICE UI) */
         #editorOverlay {
             position: fixed;
             inset: 0;
             background: #ffffff;
             display: none;
-            flex-direction: column;
             z-index: 1000;
+            width: 100vw;
+            height: 100vh;
         }
 
-        #editorOverlay.show { display: flex; }
-
-        .editor-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 8px 14px;
-            background: #ffffff;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-            height: 52px;
-            flex-shrink: 0;
-        }
-
-        .editor-title-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 0;
-            flex: 1;
-        }
-
-        .editor-bar .title {
-            font-size: 0.92rem;
-            font-weight: 700;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: #0f172a;
-        }
-
-        .editor-bar .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #f59e0b;
-            display: none;
-            flex-shrink: 0;
-        }
-
-        .editor-bar .dot.show { display: block; }
-
-        .editor-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
-        .bar-btn {
-            background: #ffffff;
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 6px 12px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .bar-btn:hover { background: #f8fafc; border-color: var(--border-hover); }
-
-        .bar-btn.primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #ffffff;
-        }
-
-        .bar-btn.primary:hover { background: var(--accent-hover); }
-        .bar-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #editorOverlay.show { display: block; }
 
         #editorFrameBox {
-            flex: 1;
-            position: relative;
             width: 100%;
             height: 100%;
         }
 
         #editorFrameBox iframe {
-            position: absolute;
-            inset: 0;
             width: 100%;
             height: 100%;
-            border: 0;
+            border: none;
+            display: block;
         }
 
         /* Toast */
@@ -722,7 +646,7 @@
 <nav class="navbar">
     <div class="nav-container">
         <a href="./" class="brand">
-            <img src="./assets/favicon.ico" alt="ONLYOFFICE x bedoffice" class="brand-logo"/>
+            <img src="./assets/favicon.svg" alt="ONLYOFFICE x bedoffice" class="brand-logo"/>
             <div class="brand-text">
                 <div class="brand-title">
                     <span class="oo-name">ONLYOFFICE</span>
@@ -843,28 +767,8 @@
     Powered by <a href="https://www.onlyoffice.com/" target="_blank" rel="noopener">ONLYOFFICE</a> WASM engine & <a href="docs.html">bedoffice</a> integration bridge · Forked & enhanced from <a href="https://github.com/fernfei/OnlyofficePersonal" target="_blank" rel="noopener">fernfei/OnlyofficePersonal</a>.
 </footer>
 
-<!-- Fullscreen Editor Overlay -->
+<!-- Fullscreen Editor Overlay (100% Native ONLYOFFICE UI) -->
 <div id="editorOverlay">
-    <div class="editor-bar">
-        <div class="editor-title-wrap">
-            <span class="title" id="editorTitle">Document</span>
-            <span class="dot" id="modifiedDot" title="Unsaved changes"></span>
-        </div>
-        <div class="editor-actions">
-            <button class="bar-btn primary" id="saveBtn" onclick="saveCurrent()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                <span class="btn-text">Save</span>
-            </button>
-            <button class="bar-btn" onclick="downloadCurrent()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span class="btn-text">Download</span>
-            </button>
-            <button class="bar-btn" onclick="closeEditor()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                <span class="btn-text">Close</span>
-            </button>
-        </div>
-    </div>
     <div id="editorFrameBox"></div>
 </div>
 
@@ -1004,15 +908,14 @@
             size: 0,
             blob: null
         }
-        if (ext === 'pdf') {
-            try {
-                const resp = await fetch('./assets/empty.pdf')
+        try {
+            const resp = await fetch(`./blank/blank.${ext}`)
+            if (resp.ok) {
                 record.blob = await resp.blob()
                 record.size = record.blob.size
-            } catch (e) {
-                toast('Failed to load blank PDF template')
-                return
             }
+        } catch (e) {
+            console.warn(`Could not load template for ${ext}, opening clean canvas.`)
         }
         await saveRecord(record)
         openEditor(record)
@@ -1090,12 +993,13 @@
 
     /* ---------- Editor Session ---------- */
     let session = null
+    const ONLYOFFICE_HOST = 'https://milio48.github.io/bedoffice/onlyoffice.html'
 
     function openEditor(record) {
         closeEditor(true)
         const box = document.getElementById('editorFrameBox')
         const frame = document.createElement('iframe')
-        frame.src = './onlyoffice.html'
+        frame.src = ONLYOFFICE_HOST
         box.appendChild(frame)
 
         session = {
@@ -1106,14 +1010,11 @@
             saveSeq: 0,
             pending: {}
         }
-        document.getElementById('editorTitle').textContent = record.name
-        document.getElementById('modifiedDot').classList.remove('show')
         document.getElementById('editorOverlay').classList.add('show')
     }
 
     async function binaryOpenBuffer(config, record) {
-        if (!config.localOpenFromBinary) return null
-        if (!record.blob) throw new Error('Local document has no binary content')
+        if (!record || !record.blob) return null
         return record.blob.arrayBuffer()
     }
 
@@ -1172,30 +1073,6 @@
         s.record.size = blob.size
         await saveRecord(s.record)
         s.modified = false
-        document.getElementById('modifiedDot').classList.remove('show')
-    }
-
-    async function saveCurrent() {
-        const btn = document.getElementById('saveBtn')
-        btn.disabled = true
-        try {
-            await persistBlob(await requestSave())
-            toast('Document saved to local storage')
-        } catch (e) {
-            toast('Save error: ' + e.message)
-        } finally {
-            btn.disabled = false
-        }
-    }
-
-    async function downloadCurrent() {
-        try {
-            const blob = await requestSave()
-            await persistBlob(blob)
-            triggerDownload(new Blob([blob], { type: mimeOf(session.record.fileType) }), session.record.name)
-        } catch (e) {
-            toast('Download error: ' + e.message)
-        }
     }
 
     function closeEditor(silent) {
@@ -1228,8 +1105,17 @@
                     delete s.pending[d.requestId]
                     d.ok && d.buffer ? p.resolve(new Blob([d.buffer])) : p.reject(new Error(d.error || 'Save failed'))
                 } else if (d.ok && d.buffer) {
-                    await persistBlob(new Blob([d.buffer]))
-                    toast('Document auto-saved')
+                    const isDownload = d.isDownload || (d.fileType && d.fileType !== s.record.fileType)
+                    if (isDownload) {
+                        const ext = d.fileType || 'pdf'
+                        const baseName = s.record.name.replace(/\.[^.]+$/, '')
+                        const fileName = d.fileName || `${baseName}.${ext}`
+                        triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), fileName)
+                        toast(`Downloaded ${fileName}`)
+                    } else {
+                        await persistBlob(new Blob([d.buffer]))
+                        toast('Document saved to local storage')
+                    }
                 }
                 break
             }
@@ -1243,13 +1129,11 @@
             case 'onlyoffice-rename':
                 if (d.title) {
                     s.record.name = /\.[^.]+$/.test(d.title) ? d.title : `${d.title}.${s.record.fileType}`
-                    document.getElementById('editorTitle').textContent = s.record.name
                     saveRecord(s.record)
                 }
                 break
             case 'onlyoffice-state-change':
                 s.modified = !!d.modified
-                document.getElementById('modifiedDot').classList.toggle('show', s.modified)
                 break
             case 'onlyoffice-request-close':
                 closeEditor()

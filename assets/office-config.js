@@ -129,7 +129,17 @@
             editorConfig: { 
                 mode: mode, 
                 lang: lang, 
-                user: localUser(options.userName) 
+                user: localUser(options.userName),
+                customization: {
+                    goback: {
+                        text: 'Back to Documents',
+                        blank: false,
+                        requestClose: true
+                    },
+                    autosave: false,
+                    forcesave: false,
+                    compactHeader: false
+                }
             }
         }
         if (shouldOpenFromBinary(documentType, options.blobUrl)) {

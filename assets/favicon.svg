@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+    <g transform="translate(15, 30)" fill-rule="nonzero" stroke="#1C5076" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+
+        <!-- HEADBOARD (Blue) -->
+        <!-- Side Face -->
+        <polygon points="380,300 395,290 395,150 380,160" fill="#5DB0E4" />
+        <!-- Top Face -->
+        <polygon points="280,100 380,160 395,150 295,90" fill="#5DB0E4" />
+        <!-- Front Face -->
+        <polygon points="380,300 280,240 280,100 380,160" fill="#5DB0E4" />
+
+        <!-- BED BASE (Blue) -->
+        <!-- Left Face -->
+        <polygon points="220,380 120,320 120,300 220,360" fill="#5DB0E4" />
+        <!-- Right Face -->
+        <polygon points="220,380 380,300 380,280 220,360" fill="#5DB0E4" />
+
+        <!-- MATTRESS (Green) -->
+        <!-- Left Face -->
+        <polygon points="220,360 120,300 120,260 220,320" fill="#90BA3E" />
+        <!-- Right Face -->
+        <polygon points="220,360 380,280 380,240 220,320" fill="#90BA3E" />
+        <!-- Top Face -->
+        <polygon points="220,320 120,260 280,180 380,240" fill="#90BA3E" />
+
+        <!-- PILLOW (Green) -->
+        <!-- Front-Left Face -->
+        <polygon points="230,210 310,250 310,270 230,230" fill="#90BA3E" />
+        <!-- Front-Right Face -->
+        <polygon points="310,250 340,235 340,255 310,270" fill="#90BA3E" />
+        <!-- Top Face -->
+        <polygon points="230,210 310,250 340,235 260,195" fill="#90BA3E" />
+        <!-- Inner Detail Line -->
+        <line x1="250" y1="215" x2="315" y2="248" />
+
+        <!-- BLANKET (Orange) -->
+        <!-- Left Drape -->
+        <polygon points="220,360 120,300 120,260 220,320" fill="#DE633F" />
+        <!-- Right Drape -->
+        <polygon points="220,360 316,312 316,272 220,320" fill="#DE633F" />
+        <!-- Top Face -->
+        <polygon points="220,320 120,260 216,212 316,272" fill="#DE633F" />
+        <!-- Fold Detail Line -->
+        <line x1="260" y1="296" x2="180" y2="248" />
+
+    </g>
+</svg>

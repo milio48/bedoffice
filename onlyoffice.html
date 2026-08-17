@@ -125,6 +125,7 @@
         postToParent({
             type: 'onlyoffice-saved',
             requestId: request && request.requestId,
+            isDownload: !request,
             ok: true,
             buffer: buffer,
             fileType: data.fileType || '',
@@ -292,6 +293,15 @@
         pendingSave = null
         streamFallback = docConfig && docConfig.streamFallback || 'autosave'
         if (docConfig) delete docConfig.streamFallback
+
+        // If openBuffer is provided (e.g. cross-origin from localhost), convert to same-origin Blob URL
+        if (openBuffer) {
+            docConfig.document = docConfig.document || {}
+            const localBlob = new Blob([openBuffer], { type: 'application/octet-stream' })
+            docConfig.document.url = URL.createObjectURL(localBlob)
+            docConfig.document.directUrl = docConfig.document.url
+        }
+
         const config = normalizeConfig(docConfig)
         configureBinaryOpen(config, openBuffer)
         config.events = config.events || {}
