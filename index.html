@@ -1073,6 +1073,7 @@
         s.record.size = blob.size
         await saveRecord(s.record)
         s.modified = false
+        refreshFileList()
     }
 
     function closeEditor(silent) {
@@ -1084,6 +1085,7 @@
         s.frame.remove()
         session = null
         document.getElementById('editorOverlay').classList.remove('show')
+        refreshFileList()
     }
 
     /* ---------- Message Protocol Listener ---------- */
@@ -1107,7 +1109,7 @@
                 } else if (d.ok && d.buffer) {
                     const isDownload = d.isDownload || (d.fileType && d.fileType !== s.record.fileType)
                     if (isDownload) {
-                        const ext = d.fileType || 'pdf'
+                        const ext = d.fileType || s.record.fileType || 'pdf'
                         const baseName = s.record.name.replace(/\.[^.]+$/, '')
                         const fileName = d.fileName || `${baseName}.${ext}`
                         triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), fileName)
@@ -1136,7 +1138,15 @@
                 s.modified = !!d.modified
                 break
             case 'onlyoffice-request-close':
-                closeEditor()
+                if (s && s.modified) {
+                    try {
+                        const blob = await requestSave()
+                        await persistBlob(blob)
+                    } catch (e) {
+                        console.warn('Auto-save on exit:', e)
+                    }
+                }
+                closeEditor(true)
                 break
         }
     })

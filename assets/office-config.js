@@ -50,13 +50,13 @@
     }
 
     /**
-     * Determines whether PDF should use binary buffer loading.
+     * Determines whether document should use binary buffer loading.
      * @param {string} documentType
      * @param {string} blobUrl
      * @returns {boolean}
      */
     function shouldOpenFromBinary(documentType, blobUrl) {
-        return documentType === 'pdf' && isLocalBlobUrl(blobUrl)
+        return isLocalBlobUrl(blobUrl)
     }
 
     function requireRecord(options) {
@@ -88,29 +88,23 @@
     }
 
     /**
-     * Builds the document config section.
+     * Builds document configuration.
+     * @param {Object} record
+     * @param {string} [blobUrl]
+     * @returns {Object}
      */
     function buildDocumentConfig(record, blobUrl) {
-        const documentType = documentTypeOf(record.fileType)
-        const openFromBinary = shouldOpenFromBinary(documentType, blobUrl)
-        const config = {
-            url: openFromBinary ? undefined : blobUrl || undefined,
-            title: record.name,
+        return {
             fileType: normalizeExtension(record.fileType),
             key: documentKeyOf(record),
+            title: record.name,
+            url: blobUrl || '',
             permissions: documentPermissions()
         }
-
-        if (documentType === 'pdf') {
-            const pdfConfig = Object.assign({}, config, { isForm: false })
-            if (openFromBinary) pdfConfig.localOpenFromBinary = true
-            return pdfConfig
-        }
-        return config
     }
 
     /**
-     * Builds the full ONLYOFFICE docConfig object.
+     * Builds full ONLYOFFICE DocsAPI configuration.
      * @param {Object} options
      * @param {Object} options.record - Document metadata ({ id, name, fileType, updatedAt })
      * @param {string} [options.blobUrl] - Local blob or remote URL
@@ -136,8 +130,9 @@
                         blank: false,
                         requestClose: true
                     },
-                    autosave: false,
-                    forcesave: false,
+                    autosave: true,
+                    forcesave: true,
+                    unit: 'cm',
                     compactHeader: false
                 }
             }
