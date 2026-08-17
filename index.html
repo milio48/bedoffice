@@ -1223,6 +1223,20 @@
                     </div>
                     <span class="check-status ok" id="statusStorage">Checking...</span>
                 </div>
+
+                <!-- 7. File System Access API (Direct Disk I/O) -->
+                <div class="check-card" id="cardFs">
+                    <div class="check-left">
+                        <div class="check-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><path d="m9 13 2 2 4-4"/></svg>
+                        </div>
+                        <div class="check-info">
+                            <div class="check-name">File System Access</div>
+                            <div class="check-desc">Direct In-Place Hard Disk Save</div>
+                        </div>
+                    </div>
+                    <span class="check-status ok" id="statusFs">Checking...</span>
+                </div>
             </div>
         </section>
 
@@ -1270,15 +1284,15 @@
             </div>
             <div class="open-grid">
                 <div class="panel">
-                    <h3>Local Device File</h3>
-                    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                    <h3>Local Device File (Direct Disk I/O)</h3>
+                    <div class="drop-zone" id="dropZone" onclick="openLocalFile()">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="17 8 12 3 7 8" />
                             <line x1="12" y1="3" x2="12" y2="15" />
                         </svg>
-                        <span>Click to browse, or drop file here</span>
+                        <span>Click to open from disk (Direct In-Place Save), or drop file here</span>
                     </div>
                     <input type="file" id="fileInput" hidden
                         accept=".doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.pdf,.odt,.ods,.odp,.txt,.rtf"
@@ -1714,6 +1728,43 @@
             return record
         }
 
+        async function openLocalFile() {
+            if ('showOpenFilePicker' in window) {
+                try {
+                    const [fileHandle] = await window.showOpenFilePicker({
+                        types: [{
+                            description: 'Office Documents',
+                            accept: {
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+                                'application/msword': ['.doc'],
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+                                'application/vnd.ms-excel': ['.xls'],
+                                'text/csv': ['.csv'],
+                                'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+                                'application/vnd.ms-powerpoint': ['.ppt'],
+                                'application/pdf': ['.pdf'],
+                                'application/vnd.oasis.opendocument.text': ['.odt'],
+                                'application/vnd.oasis.opendocument.spreadsheet': ['.ods'],
+                                'application/vnd.oasis.opendocument.presentation': ['.odp'],
+                                'text/plain': ['.txt'],
+                                'application/rtf': ['.rtf']
+                            }
+                        }],
+                        multiple: false
+                    })
+                    if (!fileHandle) return
+                    const file = await fileHandle.getFile()
+                    const record = await importFile(file)
+                    openEditor(record, {}, fileHandle)
+                    return
+                } catch (err) {
+                    if (err.name === 'AbortError') return
+                    console.warn('showOpenFilePicker error, falling back to input:', err)
+                }
+            }
+            document.getElementById('fileInput').click()
+        }
+
         async function handleFileInput(event) {
             const file = event.target.files[0]
             event.target.value = ''
@@ -1775,7 +1826,7 @@
         let session = null
         const ONLYOFFICE_HOST = 'https://milio48.github.io/bedoffice/onlyoffice.html'
 
-        function openEditor(record, editorOptions = {}) {
+        function openEditor(record, editorOptions = {}, fileHandle = null) {
             closeEditor(true)
             const box = document.getElementById('editorFrameBox')
             const frame = document.createElement('iframe')
@@ -1789,7 +1840,8 @@
                 modified: false,
                 saveSeq: 0,
                 pending: {},
-                editorOptions: editorOptions || {}
+                editorOptions: editorOptions || {},
+                fileHandle: fileHandle
             }
             document.getElementById('editorOverlay').classList.add('show')
         }
@@ -1866,8 +1918,26 @@
             if (!s) return
             s.record.blob = blob
             s.record.size = blob.size
+
+            // Direct in-place save to local disk if FileSystemFileHandle is present
+            if (s.fileHandle) {
+                try {
+                    const writable = await s.fileHandle.createWritable()
+                    await writable.write(blob)
+                    await writable.close()
+                    s.modified = false
+                    toast(`Saved directly to local disk: ${s.fileHandle.name}`)
+                    await saveRecord(s.record)
+                    refreshFileList()
+                    return
+                } catch (err) {
+                    console.warn('Native disk write failed, fallback to IndexedDB:', err)
+                }
+            }
+
             await saveRecord(s.record)
             s.modified = false
+            toast('Document saved to local storage')
             refreshFileList()
         }
 
@@ -1991,7 +2061,7 @@
         /* ---------- Compatibility Checklist Monitor ---------- */
         async function checkSystemCompatibility() {
             let passCount = 0
-            const totalChecks = 6
+            const totalChecks = 7
 
             // 1. WebAssembly
             const hasWasm = typeof WebAssembly === 'object' && typeof WebAssembly.instantiate === 'function'
@@ -2084,6 +2154,21 @@
                     if (descStorage) descStorage.textContent = 'Standard browser storage mode'
                     elStorage.className = 'check-status ok'
                     elStorage.textContent = '✓ Basic'
+                    passCount++
+                }
+            }
+
+            // 7. File System Access API
+            const hasFs = 'showOpenFilePicker' in window
+            const elFs = document.getElementById('statusFs')
+            if (elFs) {
+                if (hasFs) {
+                    elFs.className = 'check-status ok'
+                    elFs.textContent = '✓ Direct Disk'
+                    passCount++
+                } else {
+                    elFs.className = 'check-status warn'
+                    elFs.textContent = '⚠ Input Fallback'
                     passCount++
                 }
             }

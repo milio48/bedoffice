@@ -41,6 +41,7 @@
     let pendingSave = null
     let pendingOpenBuffer = null
     let streamFallback = 'autosave'
+    let currentFileType = 'docx'
 
     function postToParent(message, transfer) {
         if (window.parent === window) return
@@ -54,12 +55,36 @@
         return true
     }
 
+    function attachEditorKeyShortcuts() {
+        const frame = document.querySelector('#editor iframe')
+        if (!frame || !frame.contentWindow) return false
+        try {
+            const doc = frame.contentWindow.document
+            if (doc && !doc.dataset.bedofficeShortcuts) {
+                doc.dataset.bedofficeShortcuts = 'true'
+                doc.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        onSaveDocument()
+                    }
+                }, true)
+                return true
+            }
+        } catch (e) {
+            // Cross-origin fallback
+        }
+        return false
+    }
+
     function onDocumentReady() {
         postToParent({ type: 'onlyoffice-document-ready' })
         let attempts = 0
         const timer = setInterval(() => {
             attempts += 1
-            if (setStreamOnlyFlag() || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
+            const flagSet = setStreamOnlyFlag()
+            const shortcutsAttached = attachEditorKeyShortcuts()
+            if ((flagSet && shortcutsAttached) || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
         }, STREAM_FLAG_INTERVAL_MS)
     }
 
@@ -145,10 +170,10 @@
             return
         }
         setStreamOnlyFlag()
-        pendingSave = { requestId: data && data.requestId, format: data && data.format }
+        const targetFormat = (data && data.format) || currentFileType || 'docx'
+        pendingSave = { requestId: data && data.requestId, format: targetFormat }
         try {
-            if (data && data.format) docEditor.downloadAs(data.format)
-            else docEditor.downloadAs()
+            docEditor.downloadAs(targetFormat)
         } catch (error) {
             const requestId = pendingSave && pendingSave.requestId
             pendingSave = null
@@ -289,13 +314,14 @@
 
     function onSaveDocument() {
         setStreamOnlyFlag()
+        const targetFormat = currentFileType || 'docx'
         pendingSave = {
             requestId: `save_ui_${Date.now()}`,
-            format: ''
+            format: targetFormat
         }
         try {
             if (docEditor && docEditor.downloadAs) {
-                docEditor.downloadAs()
+                docEditor.downloadAs(targetFormat)
             }
         } catch (error) {
             const requestId = pendingSave && pendingSave.requestId
@@ -326,6 +352,7 @@
         if (docConfig) delete docConfig.streamFallback
 
         const config = normalizeConfig(docConfig)
+        currentFileType = (config.document && config.document.fileType) || 'docx'
 
         // If openBuffer is provided (e.g. cross-origin from localhost), convert to same-origin Blob URL with exact MIME type
         if (openBuffer) {
