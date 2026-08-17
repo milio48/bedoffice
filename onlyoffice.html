@@ -97,8 +97,10 @@
         if (!pendingOpenBuffer) return
         if (!docEditor) throw new Error('Editor is not ready')
         const buffer = pendingOpenBuffer
-        docEditor.openDocument({ buffer: buffer })
         pendingOpenBuffer = null
+        if (typeof docEditor.openDocument === 'function') {
+            docEditor.openDocument({ buffer: buffer })
+        }
     }
 
     function onAppReady() {

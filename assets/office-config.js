@@ -50,13 +50,13 @@
     }
 
     /**
-     * Determines whether document should use binary buffer loading.
+     * Determines whether document should use binary buffer loading (PDF only).
      * @param {string} documentType
      * @param {string} blobUrl
      * @returns {boolean}
      */
     function shouldOpenFromBinary(documentType, blobUrl) {
-        return isLocalBlobUrl(blobUrl)
+        return documentType === 'pdf' && isLocalBlobUrl(blobUrl)
     }
 
     function requireRecord(options) {
