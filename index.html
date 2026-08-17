@@ -265,11 +265,71 @@
             letter-spacing: 0.06em;
         }
 
-        /* Compatibility Monitor */
+        /* Compatibility Monitor Collapsible */
+        .monitor-section {
+            margin-top: 14px;
+            margin-bottom: 6px;
+        }
+
+        .monitor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+
+        .monitor-header:hover {
+            border-color: var(--border-hover);
+            background: #f8fafc;
+        }
+
+        .monitor-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .monitor-header .section-title {
+            font-size: 0.74rem;
+            margin-bottom: 0;
+            color: #475569;
+        }
+
+        .monitor-toggle-btn {
+            background: none;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: var(--accent);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .monitor-toggle-btn svg {
+            transition: transform 0.2s ease;
+        }
+
         .check-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 10px;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .check-grid.collapsed {
+            display: none;
         }
 
         .check-card {
@@ -363,11 +423,11 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
             color: #15803d;
             background: #dcfce7;
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 999px;
             border: 1px solid #bbf7d0;
         }
@@ -1154,16 +1214,22 @@
             </div>
         </div>
 
-        <!-- Browser & API Compatibility Monitor -->
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">System & Client APIs Readiness</h2>
-                <div class="status-summary-badge" id="systemSummaryBadge">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span id="systemSummaryText">Checking APIs...</span>
+        <!-- Browser & API Compatibility Monitor (Collapsible) -->
+        <section class="section monitor-section">
+            <div class="monitor-header" onclick="toggleApiMonitor()" title="Click to view/hide system readiness diagnostics">
+                <div class="monitor-header-left">
+                    <h2 class="section-title">System & Client APIs Readiness</h2>
+                    <div class="status-summary-badge" id="systemSummaryBadge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span id="systemSummaryText">Checking APIs...</span>
+                    </div>
                 </div>
+                <button class="monitor-toggle-btn" type="button" aria-label="Toggle system details">
+                    <span id="monitorToggleText">Details</span>
+                    <svg id="monitorToggleIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
             </div>
-            <div class="check-grid" id="compatCheckGrid">
+            <div class="check-grid collapsed" id="compatCheckGrid">
                 <!-- 1. WebAssembly -->
                 <div class="check-card" id="cardWasm">
                     <div class="check-left">
@@ -2147,6 +2213,16 @@
                     toast(`Storage ${usedMB} MB / ${totalMB} MB (${(usage / quota * 100).toFixed(0)}%) — consider deleting old documents`)
                 }
             } catch (e) { /* Storage API unavailable */ }
+        }
+
+        function toggleApiMonitor() {
+            const grid = document.getElementById('compatCheckGrid')
+            const icon = document.getElementById('monitorToggleIcon')
+            const text = document.getElementById('monitorToggleText')
+            if (!grid) return
+            const isCollapsed = grid.classList.toggle('collapsed')
+            if (icon) icon.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'
+            if (text) text.textContent = isCollapsed ? 'Details' : 'Hide'
         }
 
         /* ---------- Compatibility Checklist Monitor ---------- */
