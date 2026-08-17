@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>bedoffice Embed Bridge</title>
-    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"/>
     <script type="text/javascript" src="9.3.0.133-24e34b4f401d86dfb31def637358e2fa/vendor/web-apps/apps/api/documents/api.js"></script>
     <style>
         * {
@@ -32,6 +32,10 @@
     const STREAM_FLAG_INTERVAL_MS = 200
     const STREAM_FLAG_MAX_ATTEMPTS = 50
     const DOWNLOAD_REVOKE_DELAY_MS = 1500
+
+    const BEDOFFICE_LOGO_LIGHT = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4NiAyMCIgd2lkdGg9Ijg2IiBoZWlnaHQ9IjIwIj4KICAgIDwhLS0gYmVkT2ZmaWNlIEJyYW5kIExvZ28gKExpZ2h0IFRoZW1lKSAtLT4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEsIDEpIHNjYWxlKDAuMDM4KSI+CiAgICAgICAgPGcgZmlsbC1ydWxlPSJub256ZXJvIiBzdHJva2U9IiMxQzUwNzYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgICAgICAgICAgIDwhLS0gSEVBREJPQVJEIChCbHVlKSAtLT4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIzODAsMzAwIDM5NSwyOTAgMzk1LDE1MCAzODAsMTYwIiBmaWxsPSIjNURCMEU0IiAvPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjI4MCwxMDAgMzgwLDE2MCAzOTUsMTUwIDI5NSw5MCIgZmlsbD0iIzVEQjBFNCIgLz4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIzODAsMzAwIDI4MCwyNDAgMjgwLDEwMCAzODAsMTYwIiBmaWxsPSIjNURCMEU0IiAvPgoKICAgICAgICAgICAgPCEtLSBCRUQgQkFTRSAoQmx1ZSkgLS0+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMjIwLDM4MCAxMjAsMzIwIDEyMCwzMDAgMjIwLDM2MCIgZmlsbD0iIzVEQjBFNCIgLz4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMjAsMzgwIDM4MCwzMDAgMzgwLDI4MCAyMjAsMzYwIiBmaWxsPSIjNURCMEU0IiAvPgoKICAgICAgICAgICAgPCEtLSBNQVRUUkVTUyAoR3JlZW4pIC0tPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjIyMCwzNjAgMTIwLDMwMCAxMjAsMjYwIDIyMCwzMjAiIGZpbGw9IiM5MEJBM0UiIC8+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMjIwLDM2MCAzODAsMjgwIDM4MCwyNDAgMjIwLDMyMCIgZmlsbD0iIzkwQkEzRSIgLz4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMjAsMzIwIDEyMCwyNjAgMjgwLDE4MCAzODAsMjQwIiBmaWxsPSIjOTBCQTNFIiAvPgoKICAgICAgICAgICAgPCEtLSBQSUxMT1cgKEdyZWVuKSAtLT4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMzAsMjEwIDMxMCwyNTAgMzEwLDI3MCAyMzAsMjMwIiBmaWxsPSIjOTBCQTNFIiAvPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjMxMCwyNTAgMzQwLDIzNSAzNDAsMjU1IDMxMCwyNzAiIGZpbGw9IiM5MEJBM0UiIC8+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMjMwLDIxMCAzMTAsMjUwIDM0MCwyMzUgMjYwLDE5NSIgZmlsbD0iIzkwQkEzRSIgLz4KICAgICAgICAgICAgPGxpbmUgeDE9IjI1MCIgeTE9IjIxNSIgeDI9IjMxNSIgeTI9IjI0OCIgLz4KCiAgICAgICAgICAgIDwhLS0gQkxBTktFVCAoT3JhbmdlKSAtLT4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMjAsMzYwIDEyMCwzMDAgMTIwLDI2MCAyMjAsMzIwIiBmaWxsPSIjREU2MzNGIiAvPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjIyMCwzNjAgMzE2LDMxMiAzMTYsMjcyIDIyMCwzMjAiIGZpbGw9IiNERTYzM0YiIC8+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMjIwLDMyMCAxMjAsMjYwIDIxNiwyMTIgMzE2LDI3MiIgZmlsbD0iI0RFNjMzRiIgLz4KICAgICAgICAgICAgPGxpbmUgeDE9IjI2MCIgeTE9IjI5NiIgeDI9IjE4MCIgeTI9IjI0OCIgLz4KICAgICAgICA8L2c+CiAgICA8L2c+CgogICAgPCEtLSBXb3JkbWFyayAtLT4KICAgIDx0ZXh0IHg9IjIxIiB5PSIxNC41IiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAnU2Vnb2UgVUknLCBSb2JvdG8sIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEuNSIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzBmMTcyYSIgbGV0dGVyLXNwYWNpbmc9Ii0wLjMiPmJlZDx0c3BhbiBmaWxsPSIjMjU2M2ViIiBmb250LXdlaWdodD0iNzAwIj5PZmZpY2U8L3RzcGFuPjwvdGV4dD4KPC9zdmc+Cg=='
+
+    const BEDOFFICE_LOGO_DARK = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4NiAyMCIgd2lkdGg9Ijg2IiBoZWlnaHQ9IjIwIj4KICAgIDwhLS0gYmVkT2ZmaWNlIEJyYW5kIExvZ28gKERhcmsgVGhlbWUpIC0tPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMSwgMSkgc2NhbGUoMC4wMzgpIj4KICAgICAgICA8ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0iIzBmMTcyYSIgc3Ryb2tlLXdpZHRoPSIxNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgICAgICAgICAgPCEtLSBIRUFEQk9BUkQgKEJsdWUpIC0tPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjM4MCwzMDAgMzk1LDI5MCAzOTUsMTUwIDM4MCwxNjAiIGZpbGw9IiM1REIwRTQiIC8+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMjgwLDEwMCAzODAsMTYwIDM5NSwxNTAgMjk1LDkwIiBmaWxsPSIjNURCMEU0IiAvPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjM4MCwzMDAgMjgwLDI0MCAyODAsMTAwIDM4MCwxNjAiIGZpbGw9IiM1REIwRTQiIC8+CgogICAgICAgICAgICA8IS0tIEJFRCBCQVNFIChCbHVlKSAtLT4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMjAsMzgwIDEyMCwzMjAgMTIwLDMwMCAyMjAsMzYwIiBmaWxsPSIjNURCMEU0IiAvPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjIyMCwzODAgMzgwLDMwMCAzODAsMjgwIDIyMCwzNjAiIGZpbGw9IiM1REIwRTQiIC8+CgogICAgICAgICAgICA8IS0tIE1BVFRSRVNTIChHcmVlbikgLS0+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMjIwLDM2MCAxMjAsMzAwIDEyMCwyNjAgMjIwLDMyMCIgZmlsbD0iIzkwQkEzRSIgLz4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMjAsMzYwIDM4MCwyODAgMzgwLDI0MCAyMjAsMzIwIiBmaWxsPSIjOTBCQTNFIiAvPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjIyMCwzMjAgMTIwLDI2MCAyODAsMTgwIDM4MCwyNDAiIGZpbGw9IiM5MEJBM0UiIC8+CgogICAgICAgICAgICA8IS0tIFBJTExPVyAoR3JlZW4pIC0tPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjIzMCwyMTAgMzEwLDI1MCAzMTAsMjcwIDIzMCwyMzAiIGZpbGw9IiM5MEJBM0UiIC8+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzEwLDI1MCAzNDAsMjM1IDM0MCwyNTUgMzEwLDI3MCIgZmlsbD0iIzkwQkEzRSIgLz4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMzAsMjEwIDMxMCwyNTAgMzQwLDIzNSAyNjAsMTk1IiBmaWxsPSIjOTBCQTNFIiAvPgogICAgICAgICAgICA8bGluZSB4MT0iMjUwIiB5MT0iMjE1IiB4Mj0iMzE1IiB5Mj0iMjQ4IiAvPgoKICAgICAgICAgICAgPCEtLSBCTEFOS0VUIChPcmFuZ2UpIC0tPgogICAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjIyMCwzNjAgMTIwLDMwMCAxMjAsMjYwIDIyMCwzMjAiIGZpbGw9IiNERTYzM0YiIC8+CiAgICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iMjIwLDM2MCAzMTYsMzEyIDMxNiwyNzIgMjIwLDMyMCIgZmlsbD0iI0RFNjMzRiIgLz4KICAgICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSIyMjAsMzIwIDEyMCwyNjAgMjE2LDIxMiAzMTYsMjcyIiBmaWxsPSIjREU2MzNGIiAvPgogICAgICAgICAgICA8bGluZSB4MT0iMjYwIiB5MT0iMjk2IiB4Mj0iMTgwIiB5Mj0iMjQ4IiAvPgogICAgICAgIDwvZz4KICAgIDwvZz4KCiAgICA8IS0tIFdvcmRtYXJrIC0tPgogICAgPHRleHQgeD0iMjEiIHk9IjE0LjUiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsICdTZWdvZSBVSScsIFJvYm90bywgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMS41IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiBsZXR0ZXItc3BhY2luZz0iLTAuMyI+YmVkPHRzcGFuIGZpbGw9IiM2MGE1ZmEiIGZvbnQtd2VpZ2h0PSI3MDAiPk9mZmljZTwvdHNwYW4+PC90ZXh0Pgo8L3N2Zz4K'
 
     let docEditor = null
     let pendingSave = null
@@ -120,7 +124,7 @@
             postSaveError(request && request.requestId, 'File stream not found')
             return
         }
-        if (!request && streamFallback === 'download') {
+        if ((!request) && streamFallback === 'download') {
             triggerDownload(buffer, data)
             return
         }
@@ -263,6 +267,16 @@
         }
         if (config.height == null) config.height = '100%'
         if (config.width == null) config.width = '100%'
+
+        config.editorConfig = config.editorConfig || {}
+        config.editorConfig.customization = config.editorConfig.customization || {}
+        if (!config.editorConfig.customization.logo) {
+            config.editorConfig.customization.logo = {
+                image: BEDOFFICE_LOGO_LIGHT,
+                imageDark: BEDOFFICE_LOGO_DARK,
+                url: ''
+            }
+        }
         return config
     }
 
@@ -347,6 +361,13 @@
         }
         if (data.type === 'onlyoffice-file-stream') {
             handleFileStream(data)
+            return
+        }
+        if (data.type === 'onlyoffice-set-name' && data.name) {
+            if (docEditor && docEditor.setMetaData) {
+                docEditor.setMetaData({ title: data.name })
+            }
+            postToParent({ type: 'onlyoffice-rename', title: data.name })
         }
     }
 

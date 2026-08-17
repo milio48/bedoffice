@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ONLYOFFICE × bedoffice | Developer Documentation & Embed Guide</title>
+    <meta name="description" content="Embed the ONLYOFFICE WASM document editor into any web app via iframe postMessage bridge. Full API reference, docConfig schema, file stream extraction, and framework integration examples.">
+    <meta property="og:title" content="ONLYOFFICE × bedoffice | Developer Docs & Embed Guide">
+    <meta property="og:description" content="Embed ONLYOFFICE WASM editor into any web app. Full API reference, postMessage protocol, and code recipes.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://milio48.github.io/bedoffice/docs.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="bedoffice Developer Docs">
+    <meta name="twitter:description" content="Embed ONLYOFFICE WASM editor into any web app via iframe postMessage. Zero backend required.">
+    <link rel="canonical" href="https://milio48.github.io/bedoffice/docs.html">
     <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"/>
     
     <!-- Highlight.js Syntax Highlighting CDN -->
@@ -582,6 +591,179 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Playground */
+        .pg-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .pg-panel {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pg-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .pg-frame-box {
+            grid-column: 1 / -1;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .pg-frame-box iframe {
+            width: 100%;
+            height: 420px;
+            border: none;
+            display: block;
+        }
+
+        .pg-commands {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pg-cmd-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pg-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .pg-btn:hover {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .pg-btn.active {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .pg-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pg-input {
+            flex: 1;
+            min-width: 0;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-family: var(--font-mono);
+            color: var(--text-main);
+            background: #ffffff;
+        }
+
+        .pg-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        textarea.pg-input {
+            resize: vertical;
+            min-height: 60px;
+            line-height: 1.4;
+        }
+
+        .pg-log {
+            flex: 1;
+            min-height: 200px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding: 10px 14px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            line-height: 1.6;
+            background: var(--bg-code);
+            color: #adbac7;
+        }
+
+        .pg-log .log-entry {
+            border-bottom: 1px solid #373e47;
+            padding: 4px 0;
+        }
+
+        .pg-log .log-time {
+            color: #636e7b;
+        }
+
+        .pg-log .log-in {
+            color: #6cb6ff;
+        }
+
+        .pg-log .log-out {
+            color: #57ab5a;
+        }
+
+        .pg-log .log-err {
+            color: #e5534b;
+        }
+
+        .pg-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        .pg-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+
+        .pg-dot.ready {
+            background: #22c55e;
+        }
+
+        @media (max-width: 960px) {
+            .pg-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .pg-frame-box iframe {
+                height: 320px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -629,6 +811,10 @@
             <a href="#docconfig" class="sidebar-link">docConfig Reference</a>
             <a href="#filestream" class="sidebar-link">File Stream Extraction</a>
             <a href="#recipes" class="sidebar-link">Complete API Recipes</a>
+        </div>
+        <div class="sidebar-group">
+            <div class="sidebar-title">Interactive</div>
+            <a href="#playground" class="sidebar-link">Live Playground</a>
         </div>
         <div class="sidebar-group">
             <div class="sidebar-title">Interface Showcase</div>
@@ -740,7 +926,7 @@ function saveDocument() {
                         </tr>
                         <tr>
                             <td><code>onlyoffice-saved</code></td>
-                            <td><code>ok: bool, buffer: ArrayBuffer, fileName: str, requestId?: str</code></td>
+                            <td><code>ok: bool, buffer: ArrayBuffer, fileName: str, fileType: str, requestId?: str, isDownload?: bool</code></td>
                             <td>Delivers the raw binary stream after save or export.</td>
                         </tr>
                         <tr>
@@ -752,6 +938,21 @@ function saveDocument() {
                             <td><code>onlyoffice-state-change</code></td>
                             <td><code>modified: boolean</code></td>
                             <td>Emitted when document changes unsaved status.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-rename</code></td>
+                            <td><code>title: string</code></td>
+                            <td>Emitted when the document title changes (via user action or <code>onlyoffice-set-name</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-saveas</code></td>
+                            <td><code>ok: bool, buffer?: ArrayBuffer, fileType?: str, error?: str</code></td>
+                            <td>Emitted when user triggers "Save As" from the editor UI.</td>
+                        </tr>
+                        <tr>
+                            <td><code>onlyoffice-request-close</code></td>
+                            <td><code>none</code></td>
+                            <td>Emitted when the user clicks the editor's close/back button.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -814,6 +1015,13 @@ function saveDocument() {
     "user": {
       "id": "usr_01",
       "name": "Alex Developer"
+    },
+    "customization": {
+      "logo": {
+        "image": "https://milio48.github.io/bedoffice/assets/logo.svg",
+        "imageDark": "https://milio48.github.io/bedoffice/assets/logo-dark.svg",
+        "url": "https://milio48.github.io/bedoffice/"
+      }
     }
   }
 }</code></pre>
@@ -970,6 +1178,54 @@ window.addEventListener('message', (event) => {
             </div>
         </section>
 
+        <section id="playground" class="section">
+            <h2>Live postMessage Playground</h2>
+            <p>Test the bedoffice bridge API in real-time. Send commands and observe events from the embedded <code>onlyoffice.html</code> iframe.</p>
+
+            <div class="pg-layout">
+                <div class="pg-frame-box">
+                    <div class="pg-panel-header">
+                        <span>Live Editor Bridge</span>
+                        <div class="pg-status">
+                            <span class="pg-dot" id="pgDot"></span>
+                            <span id="pgStatus">Connecting...</span>
+                        </div>
+                    </div>
+                    <iframe id="pgFrame" src="https://milio48.github.io/bedoffice/onlyoffice.html"></iframe>
+                </div>
+
+                <div class="pg-panel">
+                    <div class="pg-panel-header">
+                        <span>Send Commands</span>
+                    </div>
+                    <div class="pg-commands">
+                        <div class="pg-cmd-row">
+                            <button class="pg-btn" id="pgBtnConfig" onclick="pgSendConfig()" title="Send a blank DOCX config to the bridge">Send Config (DOCX)</button>
+                            <button class="pg-btn" onclick="pgSendSave()" title="Request the current document as ArrayBuffer">Save / Export</button>
+                            <button class="pg-btn" onclick="pgSendSetName()" title="Rename the document in the editor header">Set Name</button>
+                        </div>
+                        <div class="pg-input-row">
+                            <input class="pg-input" id="pgNameInput" type="text" placeholder="Document title..." value="Playground Test.docx">
+                        </div>
+                        <div class="pg-cmd-row">
+                            <button class="pg-btn" onclick="pgSendCustom()" title="Send custom JSON payload">Send Custom JSON</button>
+                        </div>
+                        <div class="pg-input-row">
+                            <textarea class="pg-input" id="pgJsonInput" rows="3" placeholder='{"type": "onlyoffice-save", "requestId": "test"}'>{"type": "onlyoffice-save", "requestId": "manual_1"}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pg-panel">
+                    <div class="pg-panel-header">
+                        <span>Event Log</span>
+                        <button class="pg-btn" onclick="pgClearLog()" style="padding: 2px 8px; font-size: 0.72rem;">Clear</button>
+                    </div>
+                    <div class="pg-log" id="pgLog"><div class="log-entry"><span class="log-time">[--:--:--]</span> Waiting for bridge iframe to load...</div></div>
+                </div>
+            </div>
+        </section>
+
         <section id="showcase" class="section">
             <h2>Interface Showcase</h2>
             <p>ONLYOFFICE runs completely in-browser with rich format rendering:</p>
@@ -1105,6 +1361,157 @@ window.addEventListener('message', (event) => {
                 });
             }
         });
+    });
+
+    // ── Live Playground ──
+    const pgFrame = document.getElementById('pgFrame');
+    const pgLog = document.getElementById('pgLog');
+    const pgDot = document.getElementById('pgDot');
+    const pgStatusEl = document.getElementById('pgStatus');
+    let pgReady = false;
+
+    function pgTimestamp() {
+        const d = new Date();
+        return `[${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}]`;
+    }
+
+    function pgAppendLog(cls, prefix, text) {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span class="log-time">${pgTimestamp()}</span> <span class="${cls}">${prefix}</span> ${text}`;
+        pgLog.appendChild(entry);
+        pgLog.scrollTop = pgLog.scrollHeight;
+    }
+
+    function pgClearLog() {
+        pgLog.innerHTML = '';
+        pgAppendLog('', '', 'Log cleared.');
+    }
+
+    function pgSetStatus(ready, text) {
+        pgReady = ready;
+        pgDot.className = ready ? 'pg-dot ready' : 'pg-dot';
+        pgStatusEl.textContent = text;
+    }
+
+    function pgSendToFrame(payload) {
+        if (!pgFrame || !pgFrame.contentWindow) {
+            pgAppendLog('log-err', '✗', 'Iframe not available');
+            return;
+        }
+        try {
+            pgFrame.contentWindow.postMessage(payload, '*');
+            const summary = JSON.stringify(payload, (k, v) => {
+                if (v instanceof ArrayBuffer) return `[ArrayBuffer ${v.byteLength}B]`;
+                return v;
+            });
+            pgAppendLog('log-out', '⬆ SENT', `<code>${escapeForLog(summary)}</code>`);
+        } catch (e) {
+            pgAppendLog('log-err', '✗', 'Send failed: ' + escapeForLog(e.message));
+        }
+    }
+
+    function escapeForLog(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function pgSendConfig() {
+        const config = {
+            type: 'onlyoffice-config',
+            docConfig: {
+                document: {
+                    url: 'https://milio48.github.io/bedoffice/blank/blank.docx',
+                    title: 'Playground Test.docx',
+                    fileType: 'docx',
+                    key: 'pg_' + Date.now(),
+                    permissions: { edit: true, download: true, print: true }
+                },
+                editorConfig: {
+                    lang: 'en-US',
+                    mode: 'edit',
+                    user: { id: 'pg-user', name: 'Playground User' },
+                    customization: {
+                        logo: {
+                            image: './assets/logo.svg',
+                            imageDark: './assets/logo-dark.svg',
+                            url: ''
+                        }
+                    }
+                }
+            }
+        };
+        pgSendToFrame(config);
+    }
+
+    function pgSendSave() {
+        pgSendToFrame({
+            type: 'onlyoffice-save',
+            requestId: 'pg_save_' + Date.now()
+        });
+    }
+
+    function pgSendSetName() {
+        const name = document.getElementById('pgNameInput').value.trim();
+        if (!name) {
+            pgAppendLog('log-err', '✗', 'Please enter a document name');
+            return;
+        }
+        pgSendToFrame({ type: 'onlyoffice-set-name', name: name });
+    }
+
+    function pgSendCustom() {
+        const raw = document.getElementById('pgJsonInput').value.trim();
+        if (!raw) {
+            pgAppendLog('log-err', '✗', 'Please enter a JSON payload');
+            return;
+        }
+        try {
+            const payload = JSON.parse(raw);
+            pgSendToFrame(payload);
+        } catch (e) {
+            pgAppendLog('log-err', '✗', 'Invalid JSON: ' + escapeForLog(e.message));
+        }
+    }
+
+    // Listen for all messages from the playground iframe
+    window.addEventListener('message', (event) => {
+        if (!pgFrame || event.source !== pgFrame.contentWindow) return;
+        const d = event.data;
+        if (!d || !d.type) return;
+
+        switch (d.type) {
+            case 'onlyoffice-ready':
+                pgSetStatus(true, 'Bridge Ready');
+                pgAppendLog('log-in', '⬇ RECV', `<code>onlyoffice-ready</code> — Bridge is ready for config`);
+                break;
+            case 'onlyoffice-document-ready':
+                pgAppendLog('log-in', '⬇ RECV', `<code>onlyoffice-document-ready</code> — Document rendered`);
+                break;
+            case 'onlyoffice-saved': {
+                const size = d.buffer ? `${(d.buffer.byteLength / 1024).toFixed(1)} KB` : 'no buffer';
+                const status = d.ok ? '✓ ok' : '✗ error: ' + escapeForLog(d.error || '');
+                pgAppendLog(d.ok ? 'log-in' : 'log-err', '⬇ RECV',
+                    `<code>onlyoffice-saved</code> — ${status}, ${size}, requestId: ${escapeForLog(d.requestId || 'none')}`);
+                break;
+            }
+            case 'onlyoffice-state-change':
+                pgAppendLog('log-in', '⬇ RECV', `<code>onlyoffice-state-change</code> — modified: ${d.modified}`);
+                break;
+            case 'onlyoffice-rename':
+                pgAppendLog('log-in', '⬇ RECV', `<code>onlyoffice-rename</code> — title: "${escapeForLog(d.title)}"`);
+                break;
+            case 'onlyoffice-saveas':
+                pgAppendLog('log-in', '⬇ RECV', `<code>onlyoffice-saveas</code> — ok: ${d.ok}, type: ${d.fileType || 'n/a'}`);
+                break;
+            case 'onlyoffice-request-close':
+                pgAppendLog('log-in', '⬇ RECV', `<code>onlyoffice-request-close</code> — User clicked close`);
+                break;
+            case 'onlyoffice-open-error':
+                pgAppendLog('log-err', '⬇ RECV', `<code>onlyoffice-open-error</code> — ${escapeForLog(d.error || '')}`);
+                break;
+            default:
+                pgAppendLog('log-in', '⬇ RECV', `<code>${escapeForLog(d.type)}</code> — ${escapeForLog(JSON.stringify(d).substring(0, 200))}`);
+        }
     });
 </script>
 </body>

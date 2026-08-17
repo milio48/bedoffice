@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ONLYOFFICE × bedoffice | Client-Side WASM Document Suite</title>
-    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"/>
+    <title>bedoffice | ONLYOFFICE Client-Side WASM Document Suite</title>
+    <meta name="description"
+        content="Free, 100% client-side office suite powered by ONLYOFFICE WebAssembly. Edit Word, Excel, PowerPoint & PDF documents directly in your browser with zero servers and full privacy.">
+    <meta property="og:title" content="bedoffice | ONLYOFFICE Client-Side WASM Document Suite">
+    <meta property="og:description"
+        content="Free, 100% client-side office suite. Edit DOCX, XLSX, PPTX & PDF in your browser with zero servers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://milio48.github.io/bedoffice/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ONLYOFFICE × bedoffice">
+    <meta name="twitter:description"
+        content="Free, 100% client-side office suite powered by ONLYOFFICE WebAssembly. Zero servers, full privacy.">
+    <link rel="canonical" href="https://milio48.github.io/bedoffice/">
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
     <script src="./assets/office-config.js"></script>
     <style>
         * {
@@ -189,7 +202,7 @@
             right: -40px;
             width: 160px;
             height: 160px;
-            background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -252,6 +265,128 @@
             letter-spacing: 0.06em;
         }
 
+        /* Compatibility Monitor */
+        .check-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 10px;
+        }
+
+        .check-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .check-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .check-left {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 0;
+        }
+
+        .check-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            color: #334155;
+            flex-shrink: 0;
+        }
+
+        .check-info {
+            min-width: 0;
+        }
+
+        .check-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .check-desc {
+            font-size: 0.71rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .check-status {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            font-family: monospace;
+        }
+
+        .check-status.ok {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .check-status.warn {
+            background: #fef9c3;
+            color: #a16207;
+            border: 1px solid #fef08a;
+        }
+
+        .check-status.err {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .status-summary-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #15803d;
+            background: #dcfce7;
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
         /* Create Document Cards */
         .create-grid {
             display: grid;
@@ -294,13 +429,25 @@
             font-weight: 800;
             font-size: 0.95rem;
             flex-shrink: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .badge.word  { background: var(--word); }
-        .badge.cell  { background: var(--cell); }
-        .badge.slide { background: var(--slide); }
-        .badge.pdf   { background: var(--pdf); font-size: 0.68rem; }
+        .badge.word {
+            background: var(--word);
+        }
+
+        .badge.cell {
+            background: var(--cell);
+        }
+
+        .badge.slide {
+            background: var(--slide);
+        }
+
+        .badge.pdf {
+            background: var(--pdf);
+            font-size: 0.68rem;
+        }
 
         .doc-card-info {
             min-width: 0;
@@ -425,7 +572,9 @@
             transition: background 0.15s ease;
         }
 
-        .btn:hover { background: var(--accent-hover); }
+        .btn:hover {
+            background: var(--accent-hover);
+        }
 
         /* Recent Files Table */
         .file-table {
@@ -445,11 +594,13 @@
             transition: background 0.15s ease;
         }
 
-        .file-item + .file-item {
+        .file-item+.file-item {
             border-top: 1px solid var(--border);
         }
 
-        .file-item:hover { background: #f8fafc; }
+        .file-item:hover {
+            background: #f8fafc;
+        }
 
         .file-item .info {
             flex: 1;
@@ -521,7 +672,9 @@
             height: 100vh;
         }
 
-        #editorOverlay.show { display: block; }
+        #editorOverlay.show {
+            display: block;
+        }
 
         #editorFrameBox {
             width: 100%;
@@ -558,7 +711,9 @@
             overflow: hidden;
         }
 
-        #toast.show { opacity: 1; }
+        #toast.show {
+            opacity: 1;
+        }
 
         /* Footer */
         .footer {
@@ -632,233 +787,738 @@
                 font-size: 0.82rem;
             }
         }
+
+        /* DocBuilder Modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.96);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh;
+        }
+
+        .modal-backdrop.show .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .modal-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .modal-subtitle {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-label .optional {
+            font-size: 0.72rem;
+            font-weight: 400;
+            color: var(--text-light);
+        }
+
+        .input-addon-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: #ffffff;
+            transition: border-color 0.15s ease;
+        }
+
+        .input-addon-group:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-soft);
+        }
+
+        .input-addon-group input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            padding: 9px 12px;
+            font-size: 0.86rem;
+            color: var(--text);
+            background: transparent;
+            outline: none;
+        }
+
+        .input-addon {
+            background: #f8fafc;
+            border-left: 1px solid var(--border);
+            padding: 9px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: monospace;
+            user-select: none;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.86rem;
+            color: var(--text);
+            background: #ffffff;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-soft);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .advanced-toggle {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--accent);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            user-select: none;
+            margin-top: 4px;
+        }
+
+        .advanced-panel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-top: 4px;
+        }
+
+        .advanced-panel.open {
+            display: flex;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: #334155;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-btn.cancel {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            color: #475569;
+        }
+
+        .modal-btn.cancel:hover {
+            background: #f1f5f9;
+        }
+
+        .modal-btn.primary {
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            color: #ffffff;
+        }
+
+        .modal-btn.primary:hover {
+            background: var(--accent-hover);
+        }
     </style>
 </head>
+
 <body>
-<script>
-    // Clean URL: strip /index.html if present
-    if (window.location.pathname.endsWith('/index.html')) {
-        const cleanPath = window.location.pathname.slice(0, -10) || '/';
-        window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
-    }
-</script>
+    <script>
+        // Clean URL: strip /index.html if present
+        if (window.location.pathname.endsWith('/index.html')) {
+            const cleanPath = window.location.pathname.slice(0, -10) || '/';
+            window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
+        }
+    </script>
 
-<nav class="navbar">
-    <div class="nav-container">
-        <a href="./" class="brand">
-            <img src="./assets/favicon.svg" alt="ONLYOFFICE x bedoffice" class="brand-logo"/>
-            <div class="brand-text">
-                <div class="brand-title">
-                    <span class="oo-name">ONLYOFFICE</span>
-                    <span class="cross">×</span>
-                    <span class="bo-name">bedoffice</span>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="./" class="brand">
+                <img src="./assets/favicon.svg" alt="ONLYOFFICE x bedoffice" class="brand-logo" />
+                <div class="brand-text">
+                    <div class="brand-title">
+                        <span class="oo-name">ONLYOFFICE</span>
+                        <span class="cross">×</span>
+                        <span class="bo-name">bedoffice</span>
+                    </div>
+                    <div class="brand-subtitle">WASM Client-Side Document Suite</div>
                 </div>
-                <div class="brand-subtitle">WASM Client-Side Document Suite</div>
+            </a>
+            <div class="nav-actions">
+                <a href="docs.html" class="nav-btn secondary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                        <path d="M6 6h10M6 10h10" />
+                    </svg>
+                    <span class="label-text">Developer Docs</span>
+                </a>
+                <a href="https://github.com/milio48/bedoffice" target="_blank" rel="noopener" class="nav-btn primary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z" />
+                    </svg>
+                    <span class="label-text">GitHub</span>
+                </a>
             </div>
-        </a>
-        <div class="nav-actions">
-            <a href="docs.html" class="nav-btn secondary">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
-                <span class="label-text">Developer Docs</span>
-            </a>
-            <a href="https://github.com/milio48/bedoffice" target="_blank" rel="noopener" class="nav-btn primary">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
-                <span class="label-text">GitHub</span>
-            </a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="hero">
+            <h1>Client-Side Office Suite</h1>
+            <p>100% private, serverless document editing powered by ONLYOFFICE WebAssembly (<code>x2t.wasm</code>). Your
+                files never leave your browser.</p>
+            <div class="hero-badges">
+                <span class="pill-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    Zero-Backend Privacy
+                </span>
+                <span class="pill-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    </svg>
+                    ONLYOFFICE WASM Core
+                </span>
+                <span class="pill-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="m9 12 2 2 4-4" />
+                    </svg>
+                    DOCX / XLSX / PPTX / PDF
+                </span>
+            </div>
+        </div>
+
+        <!-- Browser & API Compatibility Monitor -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">System & Client APIs Readiness</h2>
+                <div class="status-summary-badge" id="systemSummaryBadge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span id="systemSummaryText">Checking APIs...</span>
+                </div>
+            </div>
+            <div class="check-grid" id="compatCheckGrid">
+                <!-- 1. WebAssembly -->
+                <div class="check-card" id="cardWasm">
+                    <div class="check-left">
+                        <div class="check-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                        </div>
+                        <div class="check-info">
+                            <div class="check-name">WebAssembly (WASM)</div>
+                            <div class="check-desc">x2t.wasm Core Document Engine</div>
+                        </div>
+                    </div>
+                    <span class="check-status ok" id="statusWasm">Checking...</span>
+                </div>
+
+                <!-- 2. IndexedDB Storage -->
+                <div class="check-card" id="cardIdb">
+                    <div class="check-left">
+                        <div class="check-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                        </div>
+                        <div class="check-info">
+                            <div class="check-name">IndexedDB Storage</div>
+                            <div class="check-desc">Local Offline Document Database</div>
+                        </div>
+                    </div>
+                    <span class="check-status ok" id="statusIdb">Checking...</span>
+                </div>
+
+                <!-- 3. postMessage & Transferable ArrayBuffer -->
+                <div class="check-card" id="cardIpc">
+                    <div class="check-left">
+                        <div class="check-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                        </div>
+                        <div class="check-info">
+                            <div class="check-name">IPC Transferables</div>
+                            <div class="check-desc">Zero-Copy postMessage Byte Stream</div>
+                        </div>
+                    </div>
+                    <span class="check-status ok" id="statusIpc">Checking...</span>
+                </div>
+
+                <!-- 4. Blob & Object URLs -->
+                <div class="check-card" id="cardBlob">
+                    <div class="check-left">
+                        <div class="check-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="check-info">
+                            <div class="check-name">Blob & Object URLs</div>
+                            <div class="check-desc">In-Memory Virtual Document Mount</div>
+                        </div>
+                    </div>
+                    <span class="check-status ok" id="statusBlob">Checking...</span>
+                </div>
+
+                <!-- 5. Fetch API -->
+                <div class="check-card" id="cardFetch">
+                    <div class="check-left">
+                        <div class="check-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        </div>
+                        <div class="check-info">
+                            <div class="check-name">Fetch & Streams</div>
+                            <div class="check-desc">Template & Remote File Retrieval</div>
+                        </div>
+                    </div>
+                    <span class="check-status ok" id="statusFetch">Checking...</span>
+                </div>
+
+                <!-- 6. Storage Quota & Persistence -->
+                <div class="check-card" id="cardStorage">
+                    <div class="check-left">
+                        <div class="check-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                        </div>
+                        <div class="check-info">
+                            <div class="check-name">Storage Quota</div>
+                            <div class="check-desc" id="descStorage">Estimating available storage...</div>
+                        </div>
+                    </div>
+                    <span class="check-status ok" id="statusStorage">Checking...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Document Cards -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Create New Document</h2>
+            </div>
+            <div class="create-grid">
+                <div class="doc-card" onclick="createNewDoc('docx')">
+                    <span class="badge word">W</span>
+                    <div class="doc-card-info">
+                        <div class="name">Document</div>
+                        <div class="sub">Word · .docx</div>
+                    </div>
+                </div>
+                <div class="doc-card" onclick="createNewDoc('xlsx')">
+                    <span class="badge cell">X</span>
+                    <div class="doc-card-info">
+                        <div class="name">Spreadsheet</div>
+                        <div class="sub">Excel · .xlsx</div>
+                    </div>
+                </div>
+                <div class="doc-card" onclick="createNewDoc('pptx')">
+                    <span class="badge slide">P</span>
+                    <div class="doc-card-info">
+                        <div class="name">Presentation</div>
+                        <div class="sub">PowerPoint · .pptx</div>
+                    </div>
+                </div>
+                <div class="doc-card" onclick="createNewDoc('pdf')">
+                    <span class="badge pdf">PDF</span>
+                    <div class="doc-card-info">
+                        <div class="name">PDF & Forms</div>
+                        <div class="sub">Editable · .pdf</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Open Document Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Open Document</h2>
+            </div>
+            <div class="open-grid">
+                <div class="panel">
+                    <h3>Local Device File</h3>
+                    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        <span>Click to browse, or drop file here</span>
+                    </div>
+                    <input type="file" id="fileInput" hidden
+                        accept=".doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.pdf,.odt,.ods,.odp,.txt,.rtf"
+                        onchange="handleFileInput(event)">
+                </div>
+                <div class="panel">
+                    <h3>Remote Web URL</h3>
+                    <div class="url-row">
+                        <input type="url" id="urlInput" placeholder="https://example.com/document.docx"
+                            onkeydown="if(event.key==='Enter')openFromUrl()">
+                        <button class="btn" onclick="openFromUrl()">Open</button>
+                    </div>
+                    <p class="url-tip">Target URL must allow Cross-Origin Resource Sharing (CORS)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Documents Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Documents (Local IndexedDB)</h2>
+            </div>
+            <div id="fileList"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        Powered by <a href="https://www.onlyoffice.com/" target="_blank" rel="noopener">ONLYOFFICE</a> WASM engine & <a
+            href="docs.html">bedoffice</a> integration bridge · Forked & enhanced from <a
+            href="https://github.com/fernfei/OnlyofficePersonal" target="_blank"
+            rel="noopener">fernfei/OnlyofficePersonal</a>.
+    </footer>
+
+    <!-- DocBuilder Creation Modal -->
+    <div class="modal-backdrop" id="docBuilderModal" onclick="if(event.target===this)closeCreateModal()">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-header-info">
+                    <span class="badge word" id="modalBadge">W</span>
+                    <div>
+                        <div class="modal-title" id="modalTitle">New Document</div>
+                        <div class="modal-subtitle">Configure DocBuilder & Editor Preferences</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeCreateModal()" aria-label="Close dialog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="docBuilderForm" onsubmit="handleModalSubmit(event)">
+                <div class="modal-body">
+                    <!-- Document Name -->
+                    <div class="form-group">
+                        <label class="form-label" for="modalDocName">
+                            <span>Document Title</span>
+                        </label>
+                        <div class="input-addon-group">
+                            <input type="text" id="modalDocName" required placeholder="e.g. Project Proposal"
+                                autocomplete="off">
+                            <span class="input-addon" id="modalExtAddon">.docx</span>
+                        </div>
+                        <span class="form-hint">Unique title displayed in the editor top bar</span>
+                    </div>
+
+                    <!-- Author & Language Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="modalAuthorName">
+                                <span>Author Name</span>
+                            </label>
+                            <input type="text" class="form-control" id="modalAuthorName" placeholder="Local User"
+                                autocomplete="name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="modalDocLang">
+                                <span>Interface Language</span>
+                            </label>
+                            <select class="form-control" id="modalDocLang">
+                                <option value="en-US">English (US)</option>
+                                <option value="id-ID">Bahasa Indonesia</option>
+                                <option value="es-ES">Español</option>
+                                <option value="fr-FR">Français</option>
+                                <option value="de-DE">Deutsch</option>
+                                <option value="zh-CN">简体中文</option>
+                                <option value="ja-JP">日本語</option>
+                                <option value="pt-BR">Português (BR)</option>
+                                <option value="ru-RU">Русский</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Editor Mode Row -->
+                    <div class="form-group">
+                        <label class="form-label" for="modalEditorMode">
+                            <span>Editor Mode</span>
+                        </label>
+                        <select class="form-control" id="modalEditorMode">
+                            <option value="edit">Edit Mode (Full editing & saving)</option>
+                            <option value="view">View Mode (Read-only presentation)</option>
+                        </select>
+                    </div>
+
+                    <!-- Advanced Settings Toggle -->
+                    <div>
+                        <span class="advanced-toggle" onclick="toggleAdvancedSettings()">
+                            <svg id="advIcon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                            <span>Advanced Editor Preferences</span>
+                        </span>
+
+                        <div class="advanced-panel" id="advancedPanel">
+                            <div class="form-group">
+                                <label class="form-label" for="modalUnit">Measurement Unit</label>
+                                <select class="form-control" id="modalUnit">
+                                    <option value="cm">Centimeters (cm)</option>
+                                    <option value="inch">Inches (in)</option>
+                                    <option value="pt">Points (pt)</option>
+                                </select>
+                            </div>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="modalCompactHeader">
+                                <span>Compact Header (Save screen space)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn cancel" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="modal-btn primary" id="modalSubmitBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                        <span>Create & Open</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</nav>
 
-<main class="main-content">
-    <div class="hero">
-        <h1>Client-Side Office Suite</h1>
-        <p>100% private, serverless document editing powered by ONLYOFFICE WebAssembly (<code>x2t.wasm</code>). Your files never leave your browser.</p>
-        <div class="hero-badges">
-            <span class="pill-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Zero-Backend Privacy
-            </span>
-            <span class="pill-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                ONLYOFFICE WASM Core
-            </span>
-            <span class="pill-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                DOCX / XLSX / PPTX / PDF
-            </span>
-        </div>
+    <!-- Fullscreen Editor Overlay (100% Native ONLYOFFICE UI) -->
+    <div id="editorOverlay">
+        <div id="editorFrameBox"></div>
     </div>
 
-    <!-- Create Document Cards -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">Create New Document</h2>
-        </div>
-        <div class="create-grid">
-            <div class="doc-card" onclick="createNewDoc('docx')">
-                <span class="badge word">W</span>
-                <div class="doc-card-info">
-                    <div class="name">Document</div>
-                    <div class="sub">Word · .docx</div>
-                </div>
-            </div>
-            <div class="doc-card" onclick="createNewDoc('xlsx')">
-                <span class="badge cell">X</span>
-                <div class="doc-card-info">
-                    <div class="name">Spreadsheet</div>
-                    <div class="sub">Excel · .xlsx</div>
-                </div>
-            </div>
-            <div class="doc-card" onclick="createNewDoc('pptx')">
-                <span class="badge slide">P</span>
-                <div class="doc-card-info">
-                    <div class="name">Presentation</div>
-                    <div class="sub">PowerPoint · .pptx</div>
-                </div>
-            </div>
-            <div class="doc-card" onclick="createNewDoc('pdf')">
-                <span class="badge pdf">PDF</span>
-                <div class="doc-card-info">
-                    <div class="name">PDF & Forms</div>
-                    <div class="sub">Editable · .pdf</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div id="toast"></div>
 
-    <!-- Open Document Section -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">Open Document</h2>
-        </div>
-        <div class="open-grid">
-            <div class="panel">
-                <h3>Local Device File</h3>
-                <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    <span>Click to browse, or drop file here</span>
-                </div>
-                <input type="file" id="fileInput" hidden
-                       accept=".doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.pdf,.odt,.ods,.odp,.txt,.rtf"
-                       onchange="handleFileInput(event)">
-            </div>
-            <div class="panel">
-                <h3>Remote Web URL</h3>
-                <div class="url-row">
-                    <input type="url" id="urlInput" placeholder="https://example.com/document.docx"
-                           onkeydown="if(event.key==='Enter')openFromUrl()">
-                    <button class="btn" onclick="openFromUrl()">Open</button>
-                </div>
-                <p class="url-tip">Target URL must allow Cross-Origin Resource Sharing (CORS)</p>
-            </div>
-        </div>
-    </section>
+    <script>
+        'use strict'
 
-    <!-- Recent Documents Section -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">Recent Documents (Local IndexedDB)</h2>
-        </div>
-        <div id="fileList"></div>
-    </section>
-</main>
-
-<footer class="footer">
-    Powered by <a href="https://www.onlyoffice.com/" target="_blank" rel="noopener">ONLYOFFICE</a> WASM engine & <a href="docs.html">bedoffice</a> integration bridge · Forked & enhanced from <a href="https://github.com/fernfei/OnlyofficePersonal" target="_blank" rel="noopener">fernfei/OnlyofficePersonal</a>.
-</footer>
-
-<!-- Fullscreen Editor Overlay (100% Native ONLYOFFICE UI) -->
-<div id="editorOverlay">
-    <div id="editorFrameBox"></div>
-</div>
-
-<div id="toast"></div>
-
-<script>
-    'use strict'
-
-    function documentTypeOf(ext) {
-        return OfficeConfig.documentTypeOf(ext)
-    }
-
-    const BADGES = {
-        word: { cls: 'word', label: 'W' },
-        cell: { cls: 'cell', label: 'X' },
-        slide: { cls: 'slide', label: 'P' },
-        pdf: { cls: 'pdf', label: 'PDF' }
-    }
-
-    function extOf(name) {
-        const dot = name.lastIndexOf('.')
-        return dot > -1 ? name.substring(dot + 1).toLowerCase() : ''
-    }
-
-    function mimeOf(ext) {
-        return ({
-            docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            pdf: 'application/pdf'
-        })[ext] || 'application/octet-stream'
-    }
-
-    function formatSize(bytes) {
-        if (!bytes) return '0 B'
-        const units = ['B', 'KB', 'MB', 'GB']
-        const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1)
-        return (bytes / Math.pow(1024, i)).toFixed(i ? 1 : 0) + ' ' + units[i]
-    }
-
-    /* ---------- IndexedDB Storage ---------- */
-    const DB_NAME = 'bedoffice-storage'
-    const STORE = 'files'
-    let dbPromise = null
-
-    function openDB() {
-        if (dbPromise) return dbPromise
-        dbPromise = new Promise((resolve, reject) => {
-            const req = indexedDB.open(DB_NAME, 1)
-            req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: 'id' })
-            req.onsuccess = () => resolve(req.result)
-            req.onerror = () => reject(req.error)
-        })
-        return dbPromise
-    }
-
-    function idbRequest(mode, fn) {
-        return openDB().then(db => new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE, mode)
-            const req = fn(tx.objectStore(STORE))
-            req.onsuccess = () => resolve(req.result)
-            req.onerror = () => reject(req.error)
-        }))
-    }
-
-    const idb = {
-        put: (record) => idbRequest('readwrite', s => s.put(record)),
-        get: (id) => idbRequest('readonly', s => s.get(id)),
-        del: (id) => idbRequest('readwrite', s => s.delete(id)),
-        all: () => idbRequest('readonly', s => s.getAll())
-    }
-
-    /* ---------- Recent Files List ---------- */
-    async function refreshFileList() {
-        const box = document.getElementById('fileList')
-        let files = []
-        try {
-            files = await idb.all()
-        } catch (e) {
-            box.innerHTML = '<p class="empty-tip">IndexedDB is not supported in this browser.</p>'
-            return
+        function documentTypeOf(ext) {
+            return OfficeConfig.documentTypeOf(ext)
         }
-        if (!files.length) {
-            box.innerHTML = '<p class="empty-tip">No recent documents. Created or opened files will appear here.</p>'
-            return
+
+        const BADGES = {
+            word: { cls: 'word', label: 'W' },
+            cell: { cls: 'cell', label: 'X' },
+            slide: { cls: 'slide', label: 'P' },
+            pdf: { cls: 'pdf', label: 'PDF' }
         }
-        files.sort((a, b) => b.updatedAt - a.updatedAt)
-        box.innerHTML = '<div class="file-table">' + files.map(f => {
-            const badge = BADGES[documentTypeOf(f.fileType)] || BADGES.word
-            return `
+
+        function extOf(name) {
+            const dot = name.lastIndexOf('.')
+            return dot > -1 ? name.substring(dot + 1).toLowerCase() : ''
+        }
+
+        function mimeOf(ext) {
+            return ({
+                docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                pdf: 'application/pdf'
+            })[ext] || 'application/octet-stream'
+        }
+
+        function formatSize(bytes) {
+            if (!bytes) return '0 B'
+            const units = ['B', 'KB', 'MB', 'GB']
+            const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1)
+            return (bytes / Math.pow(1024, i)).toFixed(i ? 1 : 0) + ' ' + units[i]
+        }
+
+        /* ---------- IndexedDB Storage ---------- */
+        const DB_NAME = 'bedoffice-storage'
+        const STORE = 'files'
+        let dbPromise = null
+
+        function openDB() {
+            if (dbPromise) return dbPromise
+            dbPromise = new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, 1)
+                req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: 'id' })
+                req.onsuccess = () => resolve(req.result)
+                req.onerror = () => reject(req.error)
+            })
+            return dbPromise
+        }
+
+        function idbRequest(mode, fn) {
+            return openDB().then(db => new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE, mode)
+                const req = fn(tx.objectStore(STORE))
+                req.onsuccess = () => resolve(req.result)
+                req.onerror = () => reject(req.error)
+            }))
+        }
+
+        const idb = {
+            put: (record) => idbRequest('readwrite', s => s.put(record)),
+            get: (id) => idbRequest('readonly', s => s.get(id)),
+            del: (id) => idbRequest('readwrite', s => s.delete(id)),
+            all: () => idbRequest('readonly', s => s.getAll())
+        }
+
+        /* ---------- Recent Files List ---------- */
+        async function refreshFileList() {
+            const box = document.getElementById('fileList')
+            let files = []
+            try {
+                files = await idb.all()
+            } catch (e) {
+                box.innerHTML = '<p class="empty-tip">IndexedDB is not supported in this browser.</p>'
+                return
+            }
+            if (!files.length) {
+                box.innerHTML = '<p class="empty-tip">No recent documents. Created or opened files will appear here.</p>'
+                return
+            }
+            files.sort((a, b) => b.updatedAt - a.updatedAt)
+            box.innerHTML = '<div class="file-table">' + files.map(f => {
+                const badge = BADGES[documentTypeOf(f.fileType)] || BADGES.word
+                return `
             <div class="file-item" onclick="openRecent('${f.id}')">
                 <span class="badge ${badge.cls}">${badge.label}</span>
                 <div class="info">
@@ -870,321 +1530,591 @@
                     <button class="mini-btn del" onclick="deleteRecent('${f.id}')" title="Delete from recent">Delete</button>
                 </div>
             </div>`
-        }).join('') + '</div>'
-    }
-
-    function escapeHtml(str) {
-        return String(str).replace(/[&<>"']/g, c => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        })[c])
-    }
-
-    async function uniqueName(name) {
-        const files = await idb.all().catch(() => [])
-        const names = new Set(files.map(f => f.name))
-        if (!names.has(name)) return name
-        const dot = name.lastIndexOf('.')
-        const base = dot > -1 ? name.substring(0, dot) : name
-        const ext = dot > -1 ? name.substring(dot) : ''
-        for (let i = 1; ; i++) {
-            const candidate = `${base} (${i})${ext}`
-            if (!names.has(candidate)) return candidate
+            }).join('') + '</div>'
         }
-    }
 
-    async function saveRecord(record) {
-        record.updatedAt = Date.now()
-        await idb.put(record)
-        refreshFileList()
-    }
-
-    /* ---------- Document Actions ---------- */
-    async function createNewDoc(ext) {
-        const defaultNames = { docx: 'New Document', xlsx: 'New Spreadsheet', pptx: 'New Presentation', pdf: 'New PDF' }
-        const record = {
-            id: 'f-' + Date.now(),
-            name: await uniqueName(`${defaultNames[ext] || 'Document'}.${ext}`),
-            fileType: ext,
-            size: 0,
-            blob: null
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[c])
         }
-        try {
-            const resp = await fetch(`./blank/blank.${ext}`)
-            if (resp.ok) {
-                record.blob = await resp.blob()
-                record.size = record.blob.size
+
+        function sanitizeFileName(name) {
+            return String(name).replace(/[<>"'&\\\x00-\x1f]/g, '_').substring(0, 255)
+        }
+
+        async function uniqueName(name) {
+            const files = await idb.all().catch(() => [])
+            const names = new Set(files.map(f => f.name))
+            if (!names.has(name)) return name
+            const dot = name.lastIndexOf('.')
+            const base = dot > -1 ? name.substring(0, dot) : name
+            const ext = dot > -1 ? name.substring(dot) : ''
+            for (let i = 1; ; i++) {
+                const candidate = `${base} (${i})${ext}`
+                if (!names.has(candidate)) return candidate
             }
-        } catch (e) {
-            console.warn(`Could not load template for ${ext}, opening clean canvas.`)
         }
-        await saveRecord(record)
-        openEditor(record)
-    }
 
-    async function importFile(file) {
-        const ext = extOf(file.name)
-        const record = {
-            id: 'f-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-            name: await uniqueName(file.name),
-            fileType: ext,
-            size: file.size,
-            blob: file
+        async function saveRecord(record) {
+            record.updatedAt = Date.now()
+            await idb.put(record)
+            refreshFileList()
         }
-        await saveRecord(record)
-        return record
-    }
 
-    async function handleFileInput(event) {
-        const file = event.target.files[0]
-        event.target.value = ''
-        if (file) openEditor(await importFile(file))
-    }
+        /* ---------- DocBuilder Modal Logic ---------- */
+        let pendingCreateExt = 'docx'
 
-    async function openFromUrl() {
-        const input = document.getElementById('urlInput')
-        const url = input.value.trim()
-        if (!url) return toast('Please enter a valid document URL')
-        toast('Downloading document...')
-        try {
-            const resp = await fetch(url)
-            if (!resp.ok) throw new Error('HTTP ' + resp.status)
-            const blob = await resp.blob()
-            const rawName = decodeURIComponent(url.split('?')[0].split('#')[0].split('/').pop() || '') || 'Remote Document.docx'
+        const EXT_CONFIG = {
+            docx: { name: 'New Document', label: 'Word Document', badge: 'W', cls: 'word', addon: '.docx' },
+            xlsx: { name: 'New Spreadsheet', label: 'Excel Spreadsheet', badge: 'X', cls: 'cell', addon: '.xlsx' },
+            pptx: { name: 'New Presentation', label: 'PowerPoint Presentation', badge: 'P', cls: 'slide', addon: '.pptx' },
+            pdf: { name: 'New PDF Form', label: 'PDF & Form Document', badge: 'PDF', cls: 'pdf', addon: '.pdf' }
+        }
+
+        function openCreateModal(ext) {
+            pendingCreateExt = ext || 'docx'
+            const meta = EXT_CONFIG[pendingCreateExt] || EXT_CONFIG.docx
+
+            // Update Modal Header UI
+            const badgeEl = document.getElementById('modalBadge')
+            badgeEl.className = `badge ${meta.cls}`
+            badgeEl.textContent = meta.badge
+            document.getElementById('modalTitle').textContent = meta.label
+            document.getElementById('modalExtAddon').textContent = meta.addon
+
+            // Pre-fill Document Name
+            document.getElementById('modalDocName').value = meta.name
+
+            // Load saved preferences from localStorage
+            const savedAuthor = localStorage.getItem('bedoffice_author_name') || ''
+            const savedLang = localStorage.getItem('bedoffice_lang') || 'en-US'
+            const savedUnit = localStorage.getItem('bedoffice_unit') || 'cm'
+            const savedCompact = localStorage.getItem('bedoffice_compact_header') === 'true'
+
+            document.getElementById('modalAuthorName').value = savedAuthor
+            document.getElementById('modalDocLang').value = savedLang
+            document.getElementById('modalUnit').value = savedUnit
+            document.getElementById('modalCompactHeader').checked = savedCompact
+            document.getElementById('modalEditorMode').value = 'edit'
+
+            // Show Modal
+            const modal = document.getElementById('docBuilderModal')
+            modal.classList.add('show')
+
+            setTimeout(() => {
+                const nameInput = document.getElementById('modalDocName')
+                nameInput.focus()
+                nameInput.select()
+            }, 100)
+        }
+
+        function closeCreateModal() {
+            document.getElementById('docBuilderModal').classList.remove('show')
+        }
+
+        function toggleAdvancedSettings() {
+            const panel = document.getElementById('advancedPanel')
+            panel.classList.toggle('open')
+            const icon = document.getElementById('advIcon')
+            icon.style.transform = panel.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)'
+        }
+
+        function handleModalSubmit(event) {
+            event.preventDefault()
+            const rawTitle = document.getElementById('modalDocName').value.trim()
+            const ext = pendingCreateExt
+            const authorName = document.getElementById('modalAuthorName').value.trim() || 'Local User'
+            const lang = document.getElementById('modalDocLang').value || 'en-US'
+            const mode = document.getElementById('modalEditorMode').value || 'edit'
+            const unit = document.getElementById('modalUnit').value || 'cm'
+            const compactHeader = document.getElementById('modalCompactHeader').checked
+
+            // Save preferences
+            localStorage.setItem('bedoffice_author_name', authorName)
+            localStorage.setItem('bedoffice_lang', lang)
+            localStorage.setItem('bedoffice_unit', unit)
+            localStorage.setItem('bedoffice_compact_header', compactHeader)
+
+            closeCreateModal()
+
+            executeCreateDoc({
+                title: rawTitle,
+                ext: ext,
+                authorName: authorName,
+                lang: lang,
+                mode: mode,
+                unit: unit,
+                compactHeader: compactHeader
+            })
+        }
+
+        // Modal Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('docBuilderModal').classList.contains('show')) {
+                closeCreateModal()
+            }
+        })
+
+        /* ---------- Document Actions ---------- */
+        function createNewDoc(ext) {
+            openCreateModal(ext)
+        }
+
+        async function executeCreateDoc(opts) {
+            const ext = opts.ext
+            let baseTitle = opts.title || 'Document'
+            if (baseTitle.toLowerCase().endsWith('.' + ext)) {
+                baseTitle = baseTitle.slice(0, -(ext.length + 1))
+            }
+            baseTitle = sanitizeFileName(baseTitle)
+
+            const finalName = await uniqueName(`${baseTitle}.${ext}`)
             const record = {
                 id: 'f-' + Date.now(),
-                name: await uniqueName(rawName),
-                fileType: extOf(rawName) || 'docx',
-                size: blob.size,
-                blob: blob
+                name: finalName,
+                fileType: ext,
+                size: 0,
+                blob: null
+            }
+
+            try {
+                const resp = await fetch(`./blank/blank.${ext}`)
+                if (resp.ok) {
+                    record.blob = await resp.blob()
+                    record.size = record.blob.size
+                }
+            } catch (e) {
+                console.warn(`Could not load template for ${ext}, opening clean canvas.`)
+            }
+
+            await saveRecord(record)
+            openEditor(record, {
+                userName: opts.authorName,
+                lang: opts.lang,
+                mode: opts.mode,
+                unit: opts.unit,
+                compactHeader: opts.compactHeader
+            })
+        }
+
+        async function importFile(file) {
+            const ext = extOf(file.name)
+            const record = {
+                id: 'f-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+                name: await uniqueName(file.name),
+                fileType: ext,
+                size: file.size,
+                blob: file
             }
             await saveRecord(record)
-            input.value = ''
-            openEditor(record)
-        } catch (e) {
-            toast('Failed to load file: ' + e.message + ' (Check URL and CORS permissions)')
+            return record
         }
-    }
 
-    async function openRecent(id) {
-        const record = await idb.get(id)
-        if (record) openEditor(record)
-    }
-
-    async function downloadRecent(id) {
-        const record = await idb.get(id)
-        if (!record) return
-        if (!record.blob) return toast('This document is empty. Please open and save it first.')
-        triggerDownload(record.blob, record.name)
-    }
-
-    async function deleteRecent(id) {
-        await idb.del(id)
-        refreshFileList()
-    }
-
-    function triggerDownload(blob, name) {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = name
-        a.click()
-        setTimeout(() => URL.revokeObjectURL(url), 1500)
-    }
-
-    /* ---------- Editor Session ---------- */
-    let session = null
-    const ONLYOFFICE_HOST = 'https://milio48.github.io/bedoffice/onlyoffice.html'
-
-    function openEditor(record) {
-        closeEditor(true)
-        const box = document.getElementById('editorFrameBox')
-        const frame = document.createElement('iframe')
-        frame.src = ONLYOFFICE_HOST
-        box.appendChild(frame)
-
-        session = {
-            record: record,
-            frame: frame,
-            blobUrl: record.blob ? URL.createObjectURL(record.blob) : '',
-            modified: false,
-            saveSeq: 0,
-            pending: {}
+        async function handleFileInput(event) {
+            const file = event.target.files[0]
+            event.target.value = ''
+            if (file) openEditor(await importFile(file))
         }
-        document.getElementById('editorOverlay').classList.add('show')
-    }
 
-    async function binaryOpenBuffer(config, record) {
-        if (!record || !record.blob) return null
-        return record.blob.arrayBuffer()
-    }
-
-    async function pushConfig() {
-        const s = session
-        if (!s) return
-        const docConfig = OfficeConfig.buildOnlyofficeConfig({
-            record: s.record,
-            blobUrl: s.blobUrl,
-            lang: 'en-US'
-        })
-        const openBuffer = await binaryOpenBuffer(docConfig, s.record)
-        const message = {
-            type: 'onlyoffice-config',
-            docConfig: docConfig
-        }
-        const transfer = []
-        if (openBuffer) {
-            message.openBuffer = openBuffer
-            transfer.push(openBuffer)
-        }
-        s.frame.contentWindow.postMessage(message, '*', transfer)
-    }
-
-    function reportEditorOpenError(error) {
-        console.error(error)
-        toast('Open error: ' + ((error && error.message) || error))
-    }
-
-    function pushConfigSafely() {
-        pushConfig().catch(reportEditorOpenError)
-    }
-
-    function requestSave() {
-        const s = session
-        if (!s) return Promise.reject(new Error('Editor is not active'))
-        const requestId = 'save-' + (++s.saveSeq)
-        return new Promise((resolve, reject) => {
-            const timer = setTimeout(() => {
-                delete s.pending[requestId]
-                reject(new Error('Save operation timed out'))
-            }, 30000)
-            s.pending[requestId] = {
-                resolve: (blob) => { clearTimeout(timer); resolve(blob) },
-                reject: (err) => { clearTimeout(timer); reject(err) }
+        async function openFromUrl() {
+            const input = document.getElementById('urlInput')
+            const url = input.value.trim()
+            if (!url) return toast('Please enter a valid document URL')
+            toast('Downloading document...')
+            try {
+                const resp = await fetch(url)
+                if (!resp.ok) throw new Error('HTTP ' + resp.status)
+                const blob = await resp.blob()
+                const rawName = sanitizeFileName(decodeURIComponent(url.split('?')[0].split('#')[0].split('/').pop() || '') || 'Remote Document.docx')
+                const record = {
+                    id: 'f-' + Date.now(),
+                    name: await uniqueName(rawName),
+                    fileType: extOf(rawName) || 'docx',
+                    size: blob.size,
+                    blob: blob
+                }
+                await saveRecord(record)
+                input.value = ''
+                openEditor(record)
+            } catch (e) {
+                toast('Failed to load file: ' + e.message + ' (Check URL and CORS permissions)')
             }
-            s.frame.contentWindow.postMessage(
-                { type: 'onlyoffice-save', requestId, format: s.record.fileType }, '*')
-        })
-    }
+        }
 
-    async function persistBlob(blob) {
-        const s = session
-        if (!s) return
-        s.record.blob = blob
-        s.record.size = blob.size
-        await saveRecord(s.record)
-        s.modified = false
-        refreshFileList()
-    }
+        async function openRecent(id) {
+            const record = await idb.get(id)
+            if (record) openEditor(record)
+        }
 
-    function closeEditor(silent) {
-        const s = session
-        if (!s) return
-        if (!silent && s.modified && !confirm('You have unsaved changes. Are you sure you want to close?')) return
-        Object.values(s.pending).forEach(p => p.reject(new Error('Editor closed')))
-        if (s.blobUrl) URL.revokeObjectURL(s.blobUrl)
-        s.frame.remove()
-        session = null
-        document.getElementById('editorOverlay').classList.remove('show')
-        refreshFileList()
-    }
+        async function downloadRecent(id) {
+            const record = await idb.get(id)
+            if (!record) return
+            if (!record.blob) return toast('This document is empty. Please open and save it first.')
+            triggerDownload(record.blob, record.name)
+        }
 
-    /* ---------- Message Protocol Listener ---------- */
-    window.addEventListener('message', async (event) => {
-        const d = event.data
-        const s = session
-        if (!d || !s || event.source !== s.frame.contentWindow) return
+        async function deleteRecent(id) {
+            await idb.del(id)
+            refreshFileList()
+        }
 
-        switch (d.type) {
-            case 'onlyoffice-ready':
-                pushConfigSafely()
-                break
-            case 'onlyoffice-open-error':
-                toast('Open error: ' + (d.error || 'Unknown error'))
-                break
-            case 'onlyoffice-saved': {
-                const p = d.requestId && s.pending[d.requestId]
-                if (p) {
-                    delete s.pending[d.requestId]
-                    d.ok && d.buffer ? p.resolve(new Blob([d.buffer])) : p.reject(new Error(d.error || 'Save failed'))
-                } else if (d.ok && d.buffer) {
-                    const isDownload = d.isDownload || (d.fileType && d.fileType !== s.record.fileType)
-                    if (isDownload) {
-                        const ext = d.fileType || s.record.fileType || 'pdf'
-                        const baseName = s.record.name.replace(/\.[^.]+$/, '')
-                        const fileName = d.fileName || `${baseName}.${ext}`
-                        triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), fileName)
-                        toast(`Downloaded ${fileName}`)
-                    } else {
-                        await persistBlob(new Blob([d.buffer]))
-                        toast('Document saved to local storage')
+        function triggerDownload(blob, name) {
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = name
+            a.click()
+            setTimeout(() => URL.revokeObjectURL(url), 1500)
+        }
+
+        /* ---------- Editor Session ---------- */
+        let session = null
+        const ONLYOFFICE_HOST = 'https://milio48.github.io/bedoffice/onlyoffice.html'
+
+        function openEditor(record, editorOptions = {}) {
+            closeEditor(true)
+            const box = document.getElementById('editorFrameBox')
+            const frame = document.createElement('iframe')
+            frame.src = ONLYOFFICE_HOST
+            box.appendChild(frame)
+
+            session = {
+                record: record,
+                frame: frame,
+                blobUrl: record.blob ? URL.createObjectURL(record.blob) : '',
+                modified: false,
+                saveSeq: 0,
+                pending: {},
+                editorOptions: editorOptions || {}
+            }
+            document.getElementById('editorOverlay').classList.add('show')
+        }
+
+        async function binaryOpenBuffer(config, record) {
+            if (!record || !record.blob) return null
+            return record.blob.arrayBuffer()
+        }
+
+        async function pushConfig() {
+            const s = session
+            if (!s) return
+            const opts = s.editorOptions || {}
+            const docConfig = OfficeConfig.buildOnlyofficeConfig({
+                record: s.record,
+                blobUrl: s.blobUrl,
+                lang: opts.lang || localStorage.getItem('bedoffice_lang') || 'en-US',
+                mode: opts.mode || 'edit',
+                userName: opts.userName || localStorage.getItem('bedoffice_author_name') || 'Local User'
+            })
+
+            // Apply custom UI preferences if specified
+            if (docConfig.editorConfig && docConfig.editorConfig.customization) {
+                if (opts.compactHeader !== undefined) {
+                    docConfig.editorConfig.customization.compactHeader = !!opts.compactHeader
+                }
+                if (opts.unit) {
+                    docConfig.editorConfig.customization.unit = opts.unit
+                }
+            }
+
+            const openBuffer = await binaryOpenBuffer(docConfig, s.record)
+            const message = {
+                type: 'onlyoffice-config',
+                docConfig: docConfig
+            }
+            const transfer = []
+            if (openBuffer) {
+                message.openBuffer = openBuffer
+                transfer.push(openBuffer)
+            }
+            s.frame.contentWindow.postMessage(message, '*', transfer)
+        }
+
+        function reportEditorOpenError(error) {
+            console.error(error)
+            toast('Open error: ' + ((error && error.message) || error))
+        }
+
+        function pushConfigSafely() {
+            pushConfig().catch(reportEditorOpenError)
+        }
+
+        function requestSave() {
+            const s = session
+            if (!s) return Promise.reject(new Error('Editor is not active'))
+            const requestId = 'save-' + (++s.saveSeq)
+            return new Promise((resolve, reject) => {
+                const timer = setTimeout(() => {
+                    delete s.pending[requestId]
+                    reject(new Error('Save operation timed out'))
+                }, 30000)
+                s.pending[requestId] = {
+                    resolve: (blob) => { clearTimeout(timer); resolve(blob) },
+                    reject: (err) => { clearTimeout(timer); reject(err) }
+                }
+                s.frame.contentWindow.postMessage(
+                    { type: 'onlyoffice-save', requestId, format: s.record.fileType }, '*')
+            })
+        }
+
+        async function persistBlob(blob) {
+            const s = session
+            if (!s) return
+            s.record.blob = blob
+            s.record.size = blob.size
+            await saveRecord(s.record)
+            s.modified = false
+            refreshFileList()
+        }
+
+        function closeEditor(silent) {
+            const s = session
+            if (!s) return
+            if (!silent && s.modified && !confirm('You have unsaved changes. Are you sure you want to close?')) return
+            Object.values(s.pending).forEach(p => p.reject(new Error('Editor closed')))
+            if (s.blobUrl) URL.revokeObjectURL(s.blobUrl)
+            s.frame.remove()
+            session = null
+            document.getElementById('editorOverlay').classList.remove('show')
+            refreshFileList()
+        }
+
+        /* ---------- Message Protocol Listener ---------- */
+        window.addEventListener('message', async (event) => {
+            const d = event.data
+            const s = session
+            if (!d || !s || event.source !== s.frame.contentWindow) return
+
+            switch (d.type) {
+                case 'onlyoffice-ready':
+                    pushConfigSafely()
+                    break
+                case 'onlyoffice-open-error':
+                    toast('Open error: ' + (d.error || 'Unknown error'))
+                    break
+                case 'onlyoffice-saved': {
+                    const p = d.requestId && s.pending[d.requestId]
+                    if (p) {
+                        delete s.pending[d.requestId]
+                        d.ok && d.buffer ? p.resolve(new Blob([d.buffer])) : p.reject(new Error(d.error || 'Save failed'))
+                    } else if (d.ok && d.buffer) {
+                        const isDownload = d.isDownload || (d.fileType && d.fileType !== s.record.fileType)
+                        if (isDownload) {
+                            const ext = d.fileType || s.record.fileType || 'pdf'
+                            const baseName = s.record.name.replace(/\.[^.]+$/, '')
+                            const fileName = d.fileName || `${baseName}.${ext}`
+                            triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), fileName)
+                            toast(`Downloaded ${fileName}`)
+                        } else {
+                            await persistBlob(new Blob([d.buffer]))
+                            toast('Document saved to local storage')
+                        }
                     }
+                    break
                 }
-                break
+                case 'onlyoffice-saveas':
+                    if (d.ok && d.buffer) {
+                        const ext = d.fileType || s.record.fileType
+                        const base = s.record.name.replace(/\.[^.]+$/, '')
+                        triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), `${base}-copy.${ext}`)
+                    }
+                    break
+                case 'onlyoffice-rename':
+                    if (d.title) {
+                        s.record.name = /\.[^.]+$/.test(d.title) ? d.title : `${d.title}.${s.record.fileType}`
+                        saveRecord(s.record)
+                    }
+                    break
+                case 'onlyoffice-state-change':
+                    s.modified = !!d.modified
+                    break
+                case 'onlyoffice-request-close':
+                    if (s && s.modified) {
+                        try {
+                            const blob = await requestSave()
+                            await persistBlob(blob)
+                        } catch (e) {
+                            console.warn('Auto-save on exit:', e)
+                        }
+                    }
+                    closeEditor(true)
+                    break
             }
-            case 'onlyoffice-saveas':
-                if (d.ok && d.buffer) {
-                    const ext = d.fileType || s.record.fileType
-                    const base = s.record.name.replace(/\.[^.]+$/, '')
-                    triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), `${base}-copy.${ext}`)
+        })
+
+        window.addEventListener('beforeunload', (e) => {
+            if (session && session.modified) e.preventDefault()
+        })
+
+        /* ---------- Drag and Drop ---------- */
+        function setupDragAndDrop() {
+            const zone = document.getElementById('dropZone')
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
+            zone.addEventListener('drop', async e => {
+                e.preventDefault()
+                zone.classList.remove('dragover')
+                const files = [...e.dataTransfer.files]
+                if (!files.length) return
+                let last = null
+                for (const file of files) last = await importFile(file)
+                if (files.length === 1) openEditor(last)
+                else toast(`Added ${files.length} files to recent documents`)
+            })
+        }
+
+        let toastTimer = null
+        function toast(msg) {
+            const el = document.getElementById('toast')
+            el.textContent = msg
+            el.classList.add('show')
+            clearTimeout(toastTimer)
+            toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
+        }
+
+        async function warnIfStorageLow() {
+            if (!navigator.storage || !navigator.storage.estimate) return
+            try {
+                const { usage, quota } = await navigator.storage.estimate()
+                if (quota && usage / quota > 0.8) {
+                    const usedMB = (usage / 1024 / 1024).toFixed(1)
+                    const totalMB = (quota / 1024 / 1024).toFixed(0)
+                    toast(`Storage ${usedMB} MB / ${totalMB} MB (${(usage / quota * 100).toFixed(0)}%) — consider deleting old documents`)
                 }
-                break
-            case 'onlyoffice-rename':
-                if (d.title) {
-                    s.record.name = /\.[^.]+$/.test(d.title) ? d.title : `${d.title}.${s.record.fileType}`
-                    saveRecord(s.record)
+            } catch (e) { /* Storage API unavailable */ }
+        }
+
+        /* ---------- Compatibility Checklist Monitor ---------- */
+        async function checkSystemCompatibility() {
+            let passCount = 0
+            const totalChecks = 6
+
+            // 1. WebAssembly
+            const hasWasm = typeof WebAssembly === 'object' && typeof WebAssembly.instantiate === 'function'
+            const elWasm = document.getElementById('statusWasm')
+            if (elWasm) {
+                if (hasWasm) {
+                    elWasm.className = 'check-status ok'
+                    elWasm.textContent = '✓ Ready'
+                    passCount++
+                } else {
+                    elWasm.className = 'check-status err'
+                    elWasm.textContent = '✗ Unsupported'
                 }
-                break
-            case 'onlyoffice-state-change':
-                s.modified = !!d.modified
-                break
-            case 'onlyoffice-request-close':
-                if (s && s.modified) {
+            }
+
+            // 2. IndexedDB
+            const hasIdb = 'indexedDB' in window && typeof indexedDB.open === 'function'
+            const elIdb = document.getElementById('statusIdb')
+            if (elIdb) {
+                if (hasIdb) {
+                    elIdb.className = 'check-status ok'
+                    elIdb.textContent = '✓ Ready'
+                    passCount++
+                } else {
+                    elIdb.className = 'check-status err'
+                    elIdb.textContent = '✗ Unavailable'
+                }
+            }
+
+            // 3. IPC Transferables (ArrayBuffer & postMessage)
+            const hasIpc = typeof ArrayBuffer === 'function' && typeof window.postMessage === 'function'
+            const elIpc = document.getElementById('statusIpc')
+            if (elIpc) {
+                if (hasIpc) {
+                    elIpc.className = 'check-status ok'
+                    elIpc.textContent = '✓ Ready'
+                    passCount++
+                } else {
+                    elIpc.className = 'check-status warn'
+                    elIpc.textContent = '⚠ Fallback'
+                }
+            }
+
+            // 4. Blob & Object URLs
+            const hasBlob = typeof Blob === 'function' && typeof URL.createObjectURL === 'function'
+            const elBlob = document.getElementById('statusBlob')
+            if (elBlob) {
+                if (hasBlob) {
+                    elBlob.className = 'check-status ok'
+                    elBlob.textContent = '✓ Ready'
+                    passCount++
+                } else {
+                    elBlob.className = 'check-status err'
+                    elBlob.textContent = '✗ Unsupported'
+                }
+            }
+
+            // 5. Fetch API
+            const hasFetch = typeof fetch === 'function'
+            const elFetch = document.getElementById('statusFetch')
+            if (elFetch) {
+                if (hasFetch) {
+                    elFetch.className = 'check-status ok'
+                    elFetch.textContent = '✓ Ready'
+                    passCount++
+                } else {
+                    elFetch.className = 'check-status warn'
+                    elFetch.textContent = '⚠ Polyfill'
+                }
+            }
+
+            // 6. Storage Quota API
+            const hasStorage = !!(navigator.storage && navigator.storage.estimate)
+            const elStorage = document.getElementById('statusStorage')
+            const descStorage = document.getElementById('descStorage')
+            if (elStorage) {
+                if (hasStorage) {
                     try {
-                        const blob = await requestSave()
-                        await persistBlob(blob)
+                        const { usage, quota } = await navigator.storage.estimate()
+                        const freeGB = ((quota - usage) / 1024 / 1024 / 1024).toFixed(1)
+                        if (descStorage) descStorage.textContent = `~${freeGB} GB Available for Documents`
+                        elStorage.className = 'check-status ok'
+                        elStorage.textContent = '✓ Active'
                     } catch (e) {
-                        console.warn('Auto-save on exit:', e)
+                        elStorage.className = 'check-status ok'
+                        elStorage.textContent = '✓ Ready'
                     }
+                    passCount++
+                } else {
+                    if (descStorage) descStorage.textContent = 'Standard browser storage mode'
+                    elStorage.className = 'check-status ok'
+                    elStorage.textContent = '✓ Basic'
+                    passCount++
                 }
-                closeEditor(true)
-                break
+            }
+
+            // Summary badge update
+            const summaryBadge = document.getElementById('systemSummaryBadge')
+            const summaryText = document.getElementById('systemSummaryText')
+            if (summaryBadge && summaryText) {
+                if (passCount === totalChecks) {
+                    summaryBadge.style.background = '#dcfce7'
+                    summaryBadge.style.color = '#15803d'
+                    summaryBadge.style.borderColor = '#bbf7d0'
+                    summaryText.textContent = `All Client APIs Operational (${passCount}/${totalChecks})`
+                } else if (hasWasm && hasIdb) {
+                    summaryBadge.style.background = '#fef9c3'
+                    summaryBadge.style.color = '#a16207'
+                    summaryBadge.style.borderColor = '#fef08a'
+                    summaryText.textContent = `Environment Ready (${passCount}/${totalChecks})`
+                } else {
+                    summaryBadge.style.background = '#fee2e2'
+                    summaryBadge.style.color = '#b91c1c'
+                    summaryBadge.style.borderColor = '#fecaca'
+                    summaryText.textContent = `Incompatible Environment`
+                }
+            }
         }
-    })
 
-    window.addEventListener('beforeunload', (e) => {
-        if (session && session.modified) e.preventDefault()
-    })
-
-    /* ---------- Drag and Drop ---------- */
-    function setupDragAndDrop() {
-        const zone = document.getElementById('dropZone')
-        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover') })
-        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'))
-        zone.addEventListener('drop', async e => {
-            e.preventDefault()
-            zone.classList.remove('dragover')
-            const files = [...e.dataTransfer.files]
-            if (!files.length) return
-            let last = null
-            for (const file of files) last = await importFile(file)
-            if (files.length === 1) openEditor(last)
-            else toast(`Added ${files.length} files to recent documents`)
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshFileList()
+            setupDragAndDrop()
+            warnIfStorageLow()
+            checkSystemCompatibility()
         })
-    }
-
-    let toastTimer = null
-    function toast(msg) {
-        const el = document.getElementById('toast')
-        el.textContent = msg
-        el.classList.add('show')
-        clearTimeout(toastTimer)
-        toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        refreshFileList()
-        setupDragAndDrop()
-    })
-</script>
+    </script>
 </body>
+
 </html>

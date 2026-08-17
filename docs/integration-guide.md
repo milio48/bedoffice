@@ -123,6 +123,7 @@ The `docConfig` follows the standard ONLYOFFICE configuration schema with specia
 | `editorConfig.lang` | `string` | UI language tag (e.g. `'en-US'`, `'zh-CN'`, `'es'`, `'fr'`). |
 | `editorConfig.user` | `object` | `{ id: 'uuid', name: 'User Name' }` displayed in comments and revisions. |
 | `editorConfig.customization`| `object` | Customize toolbar, feedback buttons, etc. |
+| `editorConfig.customization.logo` | `object` | `{ image: string, imageDark: string, url: string }` Custom top-left header logo (86×20px SVG/PNG) and link URL. |
 
 ---
 
@@ -134,20 +135,20 @@ The `docConfig` follows the standard ONLYOFFICE configuration schema with specia
 | :--- | :--- | :--- |
 | `onlyoffice-ready` | none | Sent when the iframe has loaded and is ready for `onlyoffice-config`. |
 | `onlyoffice-document-ready` | none | Sent when ONLYOFFICE has parsed the file and rendered the editor canvas. |
-| `onlyoffice-saved` | `ok: boolean`, `buffer: ArrayBuffer`, `fileName: string`, `fileType: string`, `requestId?: string`, `error?: string` | Contains the resulting raw binary stream after saving or export. |
+| `onlyoffice-saved` | `ok: boolean`, `buffer: ArrayBuffer`, `fileName: string`, `fileType: string`, `requestId?: string`, `isDownload?: boolean`, `error?: string` | Contains the resulting raw binary stream after saving or export. |
 | `onlyoffice-open-error` | `error: string` | Triggered if loading the document fails. |
-| `onlyoffice-dirty` | none | User has made unsaved modifications in the document. |
-| `onlyoffice-clean` | none | Document is currently clean (all changes saved or undone). |
+| `onlyoffice-state-change` | `modified: boolean` | Emitted when the document's unsaved status changes. `true` = has unsaved changes, `false` = clean. |
+| `onlyoffice-rename` | `title: string` | Emitted when the document title changes (via user action or `onlyoffice-set-name` command). |
+| `onlyoffice-saveas` | `ok: boolean`, `buffer?: ArrayBuffer`, `fileType?: string`, `error?: string` | Emitted when the user triggers a "Save As" action from the editor UI. |
+| `onlyoffice-request-close` | none | Emitted when the user clicks the editor's close/back button. |
 
 ### Messages Sent to `onlyoffice.html`
 
 | Command Type | Payload Parameters | Description |
 | :--- | :--- | :--- |
-| `onlyoffice-config` | `docConfig: object`, `streamFallback?: 'autosave' \| 'download'` | Injects configuration and mounts the editor. |
-| `onlyoffice-save` | `requestId?: string`, `format?: string` | Triggers WASM conversion and requests the file stream. |
-| `onlyoffice-set-name` | `name: string` | Updates the active document title in the top bar. |
-| `onlyoffice-save-as` | `name: string`, `fileType: string` | Saves a copy of the document under a new name and format. |
-| `onlyoffice-connector` | `action: string`, `data?: any` | Interacts with ONLYOFFICE Automation API. |
+| `onlyoffice-config` | `docConfig: object`, `openBuffer?: ArrayBuffer`, `streamFallback?: 'autosave' \| 'download'` | Injects configuration and mounts the editor. Pass `openBuffer` (with transferable) for in-memory binary loading. |
+| `onlyoffice-save` | `requestId?: string`, `format?: string` | Triggers WASM conversion and requests the file stream. Use `format` to export to a different type (e.g. `'pdf'`). |
+| `onlyoffice-set-name` | `name: string` | Updates the active document title in the editor header bar. |
 
 ---
 
@@ -324,9 +325,11 @@ export const BedofficeEditor: React.FC<BedofficeProps> = ({
 | Category | Primary Formats | Additional Supported Formats |
 | :--- | :--- | :--- |
 | **Word Processor** | `.docx` | `.doc`, `.odt`, `.rtf`, `.txt`, `.html` |
-| **Spreadsheet** | `.xlsx` | `.xls`, `.ods`, `.csv` |
-| **Presentation** | `.pptx` | `.ppt`, `.odp`, `.ppsx` |
+| **Spreadsheet** | `.xlsx` | `.xls`, `.xlsm`, `.xlt`, `.xltx`, `.xltm`, `.ods`, `.fods`, `.csv` |
+| **Presentation** | `.pptx` | `.ppt`, `.pptm`, `.pot`, `.potx`, `.potm`, `.odp`, `.fodp`, `.pps`, `.ppsx` |
 | **PDF & Forms** | `.pdf` | `.oxps`, `.xps`, `.djvu` (Annotation & Form Filling) |
+
+> **Note:** The bedoffice web app (`index.html`) supports creating new blank documents in **DOCX, XLSX, PPTX, and PDF** formats only. All other formats (ODF, legacy Office, CSV, etc.) can be opened, edited, and saved, but cannot be created as new blank documents.
 
 ---
 
