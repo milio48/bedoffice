@@ -274,7 +274,7 @@
             config.editorConfig.customization.logo = {
                 image: BEDOFFICE_LOGO_LIGHT,
                 imageDark: BEDOFFICE_LOGO_DARK,
-                url: ''
+                url: 'https://milio48.github.io/bedoffice/'
             }
         }
         return config
@@ -304,21 +304,38 @@
         }
     }
 
+    function getMimeType(fileType) {
+        const ext = String(fileType || '').toLowerCase()
+        const map = {
+            docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            doc: 'application/msword',
+            xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            xls: 'application/vnd.ms-excel',
+            pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            ppt: 'application/vnd.ms-powerpoint',
+            pdf: 'application/pdf',
+            csv: 'text/csv'
+        }
+        return map[ext] || 'application/octet-stream'
+    }
+
     function loadOnlyoffice(docConfig, openBuffer) {
         if (docEditor) docEditor.destroyEditor()
         pendingSave = null
         streamFallback = docConfig && docConfig.streamFallback || 'autosave'
         if (docConfig) delete docConfig.streamFallback
 
-        // If openBuffer is provided (e.g. cross-origin from localhost), convert to same-origin Blob URL
+        const config = normalizeConfig(docConfig)
+
+        // If openBuffer is provided (e.g. cross-origin from localhost), convert to same-origin Blob URL with exact MIME type
         if (openBuffer) {
-            docConfig.document = docConfig.document || {}
-            const localBlob = new Blob([openBuffer], { type: 'application/octet-stream' })
-            docConfig.document.url = URL.createObjectURL(localBlob)
-            docConfig.document.directUrl = docConfig.document.url
+            config.document = config.document || {}
+            const mime = getMimeType(config.document.fileType)
+            const localBlob = new Blob([openBuffer], { type: mime })
+            config.document.url = URL.createObjectURL(localBlob)
+            config.document.directUrl = config.document.url
         }
 
-        const config = normalizeConfig(docConfig)
         configureBinaryOpen(config, openBuffer)
         config.events = config.events || {}
         config.events.onAppReady = onAppReady
@@ -331,7 +348,10 @@
         config.events.onRequestRename = onRequestRename
         config.events.onRequestSaveAs = onRequestSaveAs
         config.events.onSaveDocument = onSaveDocument
-        docEditor = new DocsAPI.DocEditor('editor', config)
+
+        setTimeout(() => {
+            docEditor = new DocsAPI.DocEditor('editor', config)
+        }, 50)
     }
 
     function getUrlParams() {

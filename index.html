@@ -1679,13 +1679,16 @@
             }
 
             try {
-                const resp = await fetch(`./blank/blank.${ext}`)
+                let resp = await fetch(`./blank/blank.${ext}`)
+                if (!resp.ok) {
+                    resp = await fetch(`https://milio48.github.io/bedoffice/blank/blank.${ext}`)
+                }
                 if (resp.ok) {
                     record.blob = await resp.blob()
                     record.size = record.blob.size
                 }
             } catch (e) {
-                console.warn(`Could not load template for ${ext}, opening clean canvas.`)
+                console.warn(`Could not load template for ${ext}:`, e)
             }
 
             await saveRecord(record)

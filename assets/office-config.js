@@ -137,7 +137,7 @@
                     logo: {
                         image: (options.logo && options.logo.image) || BEDOFFICE_LOGO_LIGHT,
                         imageDark: (options.logo && options.logo.imageDark) || BEDOFFICE_LOGO_DARK,
-                        url: (options.logo && options.logo.url !== undefined) ? options.logo.url : ''
+                        url: (options.logo && options.logo.url !== undefined) ? options.logo.url : 'https://milio48.github.io/bedoffice/'
                     },
                     autosave: false,
                     forcesave: false,
