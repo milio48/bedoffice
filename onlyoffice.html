@@ -119,17 +119,27 @@
     }
 
     function handleFileStream(data) {
+        console.log('[bedoffice] handleFileStream called', {
+            hasData: !!data,
+            hasBuffer: !!(data && data.buffer),
+            bufferSize: data && data.buffer ? data.buffer.byteLength : 0,
+            fileType: data && data.fileType,
+            pendingSave: pendingSave ? pendingSave.requestId : null
+        })
         const request = pendingSave
         pendingSave = null
         const buffer = data && data.buffer
         if (!buffer) {
+            console.log('[bedoffice] handleFileStream: NO BUFFER')
             postSaveError(request && request.requestId, 'File stream not found')
             return
         }
         if ((!request) && streamFallback === 'download') {
+            console.log('[bedoffice] handleFileStream: download fallback')
             triggerDownload(buffer, data)
             return
         }
+        console.log('[bedoffice] handleFileStream → postToParent onlyoffice-saved, buffer size:', buffer.byteLength)
         postToParent({
             type: 'onlyoffice-saved',
             requestId: request && request.requestId,
@@ -296,10 +306,19 @@
     }
 
     function onSaveDocument(event) {
+        console.log('[bedoffice] onSaveDocument fired', {
+            hasEvent: !!event,
+            hasData: !!(event && event.data),
+            dataType: event && event.data ? typeof event.data : 'N/A',
+            isArrayBuffer: event && event.data instanceof ArrayBuffer,
+            hasBuffer: !!(event && event.data && event.data.buffer),
+            pendingSave: !!pendingSave
+        })
         // Path 1: ONLYOFFICE v8.1+ provides binary data directly in event.data
         if (event && event.data) {
             const buffer = (event.data instanceof ArrayBuffer) ? event.data : event.data.buffer
             if (buffer) {
+                console.log('[bedoffice] onSaveDocument → Path 1: direct binary, buffer size:', buffer.byteLength)
                 handleFileStream({
                     buffer: buffer,
                     fileType: currentFileType || 'docx',
@@ -309,14 +328,14 @@
             }
         }
         // Path 2: Fallback — trigger downloadAs, result arrives in handleFileStream
-        // Do NOT set pendingSave here; that slot is reserved for handleSaveCommand (requestSave from parent)
+        console.log('[bedoffice] onSaveDocument → Path 2: calling downloadAs(', currentFileType || 'docx', ')')
         setStreamOnlyFlag()
         try {
             if (docEditor && docEditor.downloadAs) {
                 docEditor.downloadAs(currentFileType || 'docx')
             }
         } catch (error) {
-            console.warn('onSaveDocument downloadAs error:', error)
+            console.warn('[bedoffice] onSaveDocument downloadAs error:', error)
         }
     }
 

@@ -2071,21 +2071,34 @@
                     toast('Open error: ' + (d.error || 'Unknown error'))
                     break
                 case 'onlyoffice-saved': {
+                    console.log('[bedoffice-parent] received onlyoffice-saved', {
+                        requestId: d.requestId,
+                        ok: d.ok,
+                        hasBuffer: !!d.buffer,
+                        bufferSize: d.buffer ? d.buffer.byteLength : 0,
+                        fileType: d.fileType,
+                        pendingKeys: Object.keys(s.pending)
+                    })
                     const p = d.requestId && s.pending[d.requestId]
                     if (p) {
+                        console.log('[bedoffice-parent] → resolving pending request:', d.requestId)
                         delete s.pending[d.requestId]
                         d.ok && d.buffer ? p.resolve(new Blob([d.buffer])) : p.reject(new Error(d.error || 'Save failed'))
                     } else if (d.ok && d.buffer) {
                         const isFormatExport = (d.fileType && d.fileType !== s.record.fileType)
                         if (isFormatExport) {
+                            console.log('[bedoffice-parent] → format export download')
                             const ext = d.fileType || 'pdf'
                             const baseName = s.record.name.replace(/\.[^.]+$/, '')
                             const fileName = d.fileName || `${baseName}.${ext}`
                             triggerDownload(new Blob([d.buffer], { type: mimeOf(ext) }), fileName)
                             toast(`Exported ${fileName}`)
                         } else {
+                            console.log('[bedoffice-parent] → persistBlob, buffer size:', d.buffer.byteLength)
                             await persistBlob(new Blob([d.buffer]))
                         }
+                    } else {
+                        console.log('[bedoffice-parent] → DROPPED (no pending match, no buffer, or not ok)')
                     }
                     break
                 }
