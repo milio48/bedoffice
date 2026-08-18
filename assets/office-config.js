@@ -60,7 +60,7 @@
      * @returns {boolean}
      */
     function shouldOpenFromBinary(documentType, blobUrl) {
-        return false
+        return documentType === 'pdf' && isLocalBlobUrl(blobUrl)
     }
 
     function requireRecord(options) {
@@ -98,13 +98,22 @@
      * @returns {Object}
      */
     function buildDocumentConfig(record, blobUrl) {
-        return {
+        const documentType = documentTypeOf(record.fileType)
+        const openFromBinary = shouldOpenFromBinary(documentType, blobUrl)
+        const config = {
+            url: openFromBinary ? undefined : blobUrl || undefined,
+            title: record.name,
             fileType: normalizeExtension(record.fileType),
             key: documentKeyOf(record),
-            title: record.name,
-            url: blobUrl || '',
             permissions: documentPermissions()
         }
+
+        if (documentType === 'pdf') {
+            const pdfConfig = Object.assign({}, config, { isForm: false })
+            if (openFromBinary) pdfConfig.localOpenFromBinary = true
+            return pdfConfig
+        }
+        return config
     }
 
     /**

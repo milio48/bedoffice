@@ -1451,32 +1451,14 @@
                         <span class="form-hint">Unique title displayed in the editor top bar</span>
                     </div>
 
-                    <!-- Author & Language Row -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label" for="modalAuthorName">
-                                <span>Author Name</span>
-                            </label>
-                            <input type="text" class="form-control" id="modalAuthorName" placeholder="Local User"
-                                autocomplete="name">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="modalDocLang">
-                                <span>Interface Language</span>
-                            </label>
-                            <select class="form-control" id="modalDocLang">
-                                <option value="en-US">English (US)</option>
-                                <option value="id-ID">Bahasa Indonesia</option>
-                                <option value="es-ES">Español</option>
-                                <option value="fr-FR">Français</option>
-                                <option value="de-DE">Deutsch</option>
-                                <option value="zh-CN">简体中文</option>
-                                <option value="ja-JP">日本語</option>
-                                <option value="pt-BR">Português (BR)</option>
-                                <option value="ru-RU">Русский</option>
-                            </select>
-                        </div>
+                    <!-- Author Name -->
+                    <div class="form-group">
+                        <label class="form-label" for="modalAuthorName">
+                            <span>Author Name</span>
+                        </label>
+                        <input type="text" class="form-control" id="modalAuthorName" placeholder="Local User"
+                            autocomplete="name">
+                        <span class="form-hint">Author signature for document revisions and comments</span>
                     </div>
 
                     <!-- Editor Mode Row -->
@@ -1696,12 +1678,10 @@
 
             // Load saved preferences from localStorage
             const savedAuthor = localStorage.getItem('bedoffice_author_name') || ''
-            const savedLang = localStorage.getItem('bedoffice_lang') || 'en-US'
             const savedUnit = localStorage.getItem('bedoffice_unit') || 'cm'
             const savedCompact = localStorage.getItem('bedoffice_compact_header') === 'true'
 
             document.getElementById('modalAuthorName').value = savedAuthor
-            document.getElementById('modalDocLang').value = savedLang
             document.getElementById('modalUnit').value = savedUnit
             document.getElementById('modalCompactHeader').checked = savedCompact
             document.getElementById('modalEditorMode').value = 'edit'
@@ -1733,14 +1713,13 @@
             const rawTitle = document.getElementById('modalDocName').value.trim()
             const ext = pendingCreateExt
             const authorName = document.getElementById('modalAuthorName').value.trim() || 'Local User'
-            const lang = document.getElementById('modalDocLang').value || 'en-US'
+            const lang = 'en-US'
             const mode = document.getElementById('modalEditorMode').value || 'edit'
             const unit = document.getElementById('modalUnit').value || 'cm'
             const compactHeader = document.getElementById('modalCompactHeader').checked
 
             // Save preferences
             localStorage.setItem('bedoffice_author_name', authorName)
-            localStorage.setItem('bedoffice_lang', lang)
             localStorage.setItem('bedoffice_unit', unit)
             localStorage.setItem('bedoffice_compact_header', compactHeader)
 
@@ -1946,7 +1925,9 @@
 
         /* ---------- Editor Session ---------- */
         let session = null
-        const ONLYOFFICE_HOST = 'https://milio48.github.io/bedoffice/onlyoffice.html'
+        const ONLYOFFICE_HOST = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+            ? './onlyoffice.html'
+            : 'https://milio48.github.io/bedoffice/onlyoffice.html'
 
         function openEditor(record, editorOptions = {}, fileHandle = null) {
             closeEditor(true)
@@ -1969,7 +1950,8 @@
         }
 
         async function binaryOpenBuffer(config, record) {
-            if (!record || !record.blob) return null
+            if (!config.localOpenFromBinary) return null
+            if (!record || !record.blob) throw new Error('Local document is missing content')
             return record.blob.arrayBuffer()
         }
 

@@ -133,8 +133,13 @@
     }
 
     function openPendingBinaryDocument() {
-        // Document loading is reliably handled via Blob URL in config.document.url
+        if (!pendingOpenBuffer) return
+        if (!docEditor) throw new Error('Editor is not ready')
+        const buffer = pendingOpenBuffer
         pendingOpenBuffer = null
+        if (typeof docEditor.openDocument === 'function') {
+            docEditor.openDocument({ buffer: buffer })
+        }
     }
 
     function onAppReady() {
@@ -365,8 +370,8 @@
         const config = normalizeConfig(docConfig)
         currentFileType = (config.document && config.document.fileType) || 'docx'
 
-        // If openBuffer is provided (e.g. cross-origin from localhost), convert to same-origin Blob URL with exact MIME type
-        if (openBuffer) {
+        // If openBuffer is provided and NOT opening via direct binary (e.g. cross-origin DOCX/XLSX/PPTX)
+        if (openBuffer && !config.localOpenFromBinary && !config.document.url) {
             config.document = config.document || {}
             const mime = getMimeType(config.document.fileType)
             const localBlob = new Blob([openBuffer], { type: mime })
