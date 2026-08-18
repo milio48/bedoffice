@@ -328,7 +328,18 @@
         pendingOpenBuffer = openBuffer
     }
 
-    function onSaveDocument() {
+    function onSaveDocument(event) {
+        if (event && event.data) {
+            const buffer = (event.data instanceof ArrayBuffer) ? event.data : event.data.buffer
+            if (buffer) {
+                handleFileStream({
+                    buffer: buffer,
+                    fileType: currentFileType || 'docx',
+                    fileName: ''
+                })
+                return
+            }
+        }
         setStreamOnlyFlag()
         const targetFormat = currentFileType || 'docx'
         pendingSave = {

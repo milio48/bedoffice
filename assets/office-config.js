@@ -152,8 +152,8 @@
                         imageDark: (options.logo && options.logo.imageDark) || BEDOFFICE_LOGO_DARK,
                         url: (options.logo && options.logo.url !== undefined) ? options.logo.url : 'https://milio48.github.io/bedoffice/'
                     },
-                    autosave: false,
-                    forcesave: false,
+                    autosave: true,
+                    forcesave: true,
                     unit: 'cm',
                     compactHeader: false
                 }
