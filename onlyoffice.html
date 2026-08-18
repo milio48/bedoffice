@@ -55,46 +55,13 @@
         return true
     }
 
-    function attachEditorKeyShortcuts() {
-        const frame = document.querySelector('#editor iframe')
-        if (!frame || !frame.contentWindow) return false
-        try {
-            const win = frame.contentWindow
-            const doc = win.document
-            if (win && !win._bedofficeShortcuts) {
-                win._bedofficeShortcuts = true
-                const handleKey = (e) => {
-                    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        onSaveDocument()
-                    }
-                }
-                win.addEventListener('keydown', handleKey, true)
-                if (doc) doc.addEventListener('keydown', handleKey, true)
-                return true
-            }
-        } catch (e) {
-            // Cross-origin fallback
-        }
-        return false
-    }
-
-    window.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-            e.preventDefault()
-            onSaveDocument()
-        }
-    }, true)
-
     function onDocumentReady() {
         postToParent({ type: 'onlyoffice-document-ready' })
         let attempts = 0
         const timer = setInterval(() => {
             attempts += 1
             const flagSet = setStreamOnlyFlag()
-            const shortcutsAttached = attachEditorKeyShortcuts()
-            if ((flagSet && shortcutsAttached) || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
+            if (flagSet || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
         }, STREAM_FLAG_INTERVAL_MS)
     }
 
@@ -329,6 +296,7 @@
     }
 
     function onSaveDocument(event) {
+        // Path 1: ONLYOFFICE v8.1+ provides binary data directly in event.data
         if (event && event.data) {
             const buffer = (event.data instanceof ArrayBuffer) ? event.data : event.data.buffer
             if (buffer) {
@@ -340,20 +308,15 @@
                 return
             }
         }
+        // Path 2: Fallback — trigger downloadAs, result arrives in handleFileStream
+        // Do NOT set pendingSave here; that slot is reserved for handleSaveCommand (requestSave from parent)
         setStreamOnlyFlag()
-        const targetFormat = currentFileType || 'docx'
-        pendingSave = {
-            requestId: `save_ui_${Date.now()}`,
-            format: targetFormat
-        }
         try {
             if (docEditor && docEditor.downloadAs) {
-                docEditor.downloadAs(targetFormat)
+                docEditor.downloadAs(currentFileType || 'docx')
             }
         } catch (error) {
-            const requestId = pendingSave && pendingSave.requestId
-            pendingSave = null
-            postSaveError(requestId, error)
+            console.warn('onSaveDocument downloadAs error:', error)
         }
     }
 

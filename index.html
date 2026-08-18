@@ -2123,21 +2123,6 @@
             if (session && session.modified) e.preventDefault()
         })
 
-        /* Global Instant Ctrl+S Shortcut */
-        window.addEventListener('keydown', async (e) => {
-            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-                if (session) {
-                    e.preventDefault()
-                    try {
-                        const blob = await requestSave()
-                        await persistBlob(blob)
-                    } catch (err) {
-                        console.warn('Instant Ctrl+S save:', err)
-                    }
-                }
-            }
-        })
-
         /* ---------- Drag and Drop ---------- */
         function setupDragAndDrop() {
             const zone = document.getElementById('dropZone')
