@@ -884,6 +884,7 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
+            overflow-y: auto;
             opacity: 0;
             transition: opacity 0.2s ease;
         }
@@ -905,7 +906,8 @@
             flex-direction: column;
             transform: scale(0.96);
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: 90vh;
+            max-height: calc(100vh - 32px);
+            margin: auto;
         }
 
         .modal-backdrop.show .modal-box {
@@ -913,13 +915,14 @@
         }
 
         .modal-header {
-            padding: 16px 20px;
+            padding: 14px 18px;
             background: #ffffff;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .modal-header-info {
@@ -960,11 +963,14 @@
         }
 
         .modal-body {
-            padding: 20px;
+            padding: 18px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
+            flex: 1 1 auto;
+            min-height: 0;
+            -webkit-overflow-scrolling: touch;
         }
 
         .form-group {
@@ -1098,13 +1104,66 @@
         }
 
         .modal-footer {
-            padding: 14px 20px;
+            padding: 12px 18px;
             background: #f8fafc;
             border-top: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: flex-end;
             gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Mobile Landscape / Short Viewport Support */
+        @media (max-height: 560px) {
+            .modal-backdrop {
+                padding: 8px;
+            }
+
+            .modal-box {
+                max-height: calc(100vh - 16px);
+                border-radius: var(--radius-md);
+            }
+
+            .modal-header {
+                padding: 8px 14px;
+            }
+
+            .modal-title {
+                font-size: 0.95rem;
+            }
+
+            .modal-subtitle {
+                font-size: 0.7rem;
+            }
+
+            .modal-body {
+                padding: 10px 14px;
+                gap: 8px;
+            }
+
+            .form-group {
+                gap: 4px;
+            }
+
+            .form-control, .input-addon-group input {
+                padding: 6px 10px;
+                font-size: 0.82rem;
+            }
+
+            .input-addon {
+                padding: 6px 10px;
+                font-size: 0.76rem;
+            }
+
+            .modal-footer {
+                padding: 8px 14px;
+            }
+
+            .modal-btn {
+                padding: 6px 12px;
+                font-size: 0.78rem;
+            }
         }
 
         .modal-btn {
@@ -2119,12 +2178,13 @@
                     s.modified = !!d.modified
                     break
                 case 'onlyoffice-request-close':
+                case 'onlyoffice-logo-click':
                     if (s && s.modified) {
                         try {
                             const blob = await requestSave()
                             await persistBlob(blob)
                         } catch (e) {
-                            console.warn('Auto-save on exit:', e)
+                            console.warn('Auto-save on exit/logo click:', e)
                         }
                     }
                     closeEditor(true)

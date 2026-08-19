@@ -148,7 +148,20 @@
                 }
             })
 
-            // 4. Recursively hook any nested sub-iframes
+            // 4. Hook header logo to prevent _blank new tab and emit postMessage IPC
+            const logo = doc.querySelector('#header-logo, .header-logo, [id*="header-logo"]')
+            if (logo && !logo._bedofficeLogoHooked) {
+                logo._bedofficeLogoHooked = true
+                logo.style.cursor = 'pointer'
+                logo.addEventListener('click', (e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    e.stopImmediatePropagation()
+                    postToParent({ type: 'onlyoffice-logo-click' })
+                }, true)
+            }
+
+            // 5. Recursively hook any nested sub-iframes
             const subFrames = doc.querySelectorAll('iframe')
             subFrames.forEach(sub => {
                 try {
@@ -158,7 +171,6 @@
                         subWin._bedofficeKeyHooked = true
                         subWin.addEventListener('keydown', handleSaveKeydown, true)
                         subDoc.addEventListener('keydown', handleSaveKeydown, true)
-                        console.log('[bedoffice] Attached Ctrl+S keydown listener to nested sub-iframe')
                     }
                 } catch (err) {}
             })
