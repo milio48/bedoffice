@@ -56,35 +56,91 @@
     }
 
     // Force binary extraction via downloadAs — the only reliable save path
-    // (onSaveDocument event is NOT fired by ONLYOFFICE WASM v9.3.0.133)
-    function doSave() {
-        if (!docEditor || !docEditor.downloadAs) return
+    function doSave(triggerSource) {
+        console.log('[bedoffice] doSave() triggered via:', triggerSource || 'unknown', {
+            currentFileType: currentFileType,
+            hasDocEditor: !!docEditor,
+            hasDownloadAs: !!(docEditor && docEditor.downloadAs)
+        })
+        if (!docEditor || !docEditor.downloadAs) {
+            console.warn('[bedoffice] doSave() aborted: docEditor or downloadAs not available')
+            return
+        }
         setStreamOnlyFlag()
-        docEditor.downloadAs(currentFileType || 'docx')
+        try {
+            console.log('[bedoffice] invoking docEditor.downloadAs(' + (currentFileType || 'docx') + ')')
+            docEditor.downloadAs(currentFileType || 'docx')
+        } catch (err) {
+            console.error('[bedoffice] docEditor.downloadAs threw an error:', err)
+        }
     }
 
     function handleSaveKeydown(e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            console.log('[bedoffice] Ctrl+S intercepted on element:', e.target)
             e.preventDefault()
-            doSave()
+            doSave('Ctrl+S keydown')
         }
     }
 
-    // Capture-phase listener on onlyoffice.html window (for when focus is here)
+    // Capture-phase listener on onlyoffice.html bridge window
     window.addEventListener('keydown', handleSaveKeydown, true)
 
-    function attachInnerFrameSave() {
+    function hookAllEditorElements() {
         const frame = document.querySelector('#editor iframe')
         if (!frame || !frame.contentWindow) return false
+
         try {
             const win = frame.contentWindow
-            if (win && !win._bedofficeSaveHook) {
-                win._bedofficeSaveHook = true
+            const doc = win.document
+            if (!doc) return false
+
+            // 1. Hook keydown on inner window & document
+            if (!win._bedofficeKeyHooked) {
+                win._bedofficeKeyHooked = true
                 win.addEventListener('keydown', handleSaveKeydown, true)
-                if (win.document) win.document.addEventListener('keydown', handleSaveKeydown, true)
-                return true
+                doc.addEventListener('keydown', handleSaveKeydown, true)
+                console.log('[bedoffice] Attached Ctrl+S keydown listener to inner editor frame')
             }
-            return !!win._bedofficeSaveHook
+
+            // 2. Hook toolbar Save buttons
+            const selectors = [
+                'button[aria-label*="Save"]',
+                'button[aria-label*="save"]',
+                'button[data-hint-title="S"]',
+                '.btn-save',
+                '#slot-btn-save',
+                '[data-tab-action="save"]',
+                '.btn-toolbar-save'
+            ]
+
+            let hookedCount = 0
+            selectors.forEach(sel => {
+                const elements = doc.querySelectorAll(sel)
+                elements.forEach(el => {
+                    const btn = el.tagName === 'BUTTON' ? el : (el.closest('button') || el)
+                    if (btn && !btn._bedofficeClickHooked) {
+                        btn._bedofficeClickHooked = true
+                        btn.addEventListener('click', (e) => {
+                            console.log('[bedoffice] Toolbar Save button clicked via DOM hook!', btn)
+                            doSave('Toolbar Button Click')
+                        }, true)
+                        hookedCount += 1
+                        console.log('[bedoffice] Successfully hooked Toolbar Save Button:', btn)
+                    }
+                })
+            })
+
+            // 3. Hook inputs/textareas inside inner editor (where typing focus lives)
+            const inputs = doc.querySelectorAll('input, textarea, canvas, .asc-editor-input')
+            inputs.forEach(inp => {
+                if (!inp._bedofficeKeyHooked) {
+                    inp._bedofficeKeyHooked = true
+                    inp.addEventListener('keydown', handleSaveKeydown, true)
+                }
+            })
+
+            return true
         } catch (e) {
             return false
         }
@@ -92,13 +148,11 @@
 
     function onDocumentReady() {
         postToParent({ type: 'onlyoffice-document-ready' })
-        let attempts = 0
+        // Continuous polling: toolbar elements can render dynamically after document ready
         const timer = setInterval(() => {
-            attempts += 1
-            const flagSet = setStreamOnlyFlag()
-            const saveHooked = attachInnerFrameSave()
-            if ((flagSet && saveHooked) || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
-        }, STREAM_FLAG_INTERVAL_MS)
+            setStreamOnlyFlag()
+            hookAllEditorElements()
+        }, 300)
     }
 
     function triggerDownload(buffer, data) {
