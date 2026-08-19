@@ -55,13 +55,49 @@
         return true
     }
 
+    // Force binary extraction via downloadAs — the only reliable save path
+    // (onSaveDocument event is NOT fired by ONLYOFFICE WASM v9.3.0.133)
+    function doSave() {
+        if (!docEditor || !docEditor.downloadAs) return
+        setStreamOnlyFlag()
+        docEditor.downloadAs(currentFileType || 'docx')
+    }
+
+    function handleSaveKeydown(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault()
+            doSave()
+        }
+    }
+
+    // Capture-phase listener on onlyoffice.html window (for when focus is here)
+    window.addEventListener('keydown', handleSaveKeydown, true)
+
+    function attachInnerFrameSave() {
+        const frame = document.querySelector('#editor iframe')
+        if (!frame || !frame.contentWindow) return false
+        try {
+            const win = frame.contentWindow
+            if (win && !win._bedofficeSaveHook) {
+                win._bedofficeSaveHook = true
+                win.addEventListener('keydown', handleSaveKeydown, true)
+                if (win.document) win.document.addEventListener('keydown', handleSaveKeydown, true)
+                return true
+            }
+            return !!win._bedofficeSaveHook
+        } catch (e) {
+            return false
+        }
+    }
+
     function onDocumentReady() {
         postToParent({ type: 'onlyoffice-document-ready' })
         let attempts = 0
         const timer = setInterval(() => {
             attempts += 1
             const flagSet = setStreamOnlyFlag()
-            if (flagSet || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
+            const saveHooked = attachInnerFrameSave()
+            if ((flagSet && saveHooked) || attempts > STREAM_FLAG_MAX_ATTEMPTS) clearInterval(timer)
         }, STREAM_FLAG_INTERVAL_MS)
     }
 
