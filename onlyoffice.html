@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>bedoffice Embed Bridge</title>
-    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"/>
-    <script type="text/javascript" src="9.3.0.133-24e34b4f401d86dfb31def637358e2fa/vendor/web-apps/apps/api/documents/api.js"></script>
-    <style>
+    <script type="text/javascript">
+        (function() {
+            const isLocal = window.location.hostname === 'localhost' || 
+                            window.location.hostname === '127.0.0.1' || 
+                            window.location.protocol === 'file:';
+            const vendorRel = '9.3.0.133-24e34b4f401d86dfb31def637358e2fa/vendor/web-apps/apps/api/documents/api.js';
+            const remoteCdn = 'https://milio48.github.io/bedoffice/' + vendorRel;
+            const targetSrc = isLocal ? remoteCdn : ('./' + vendorRel);
+
+            const s = document.createElement('script');
+            s.type = 'text/javascript';
+            s.src = targetSrc;
+            s.onerror = function() {
+                if (s.src !== remoteCdn) {
+                    const fallback = document.createElement('script');
+                    fallback.type = 'text/javascript';
+                    fallback.src = remoteCdn;
+                    document.head.appendChild(fallback);
+                }
+            };
+            document.head.appendChild(s);
+        })();
+    </script>
         * {
             margin: 0;
             padding: 0;
@@ -556,11 +576,7 @@
         }
     }
 
-    function init() {
-        if (typeof DocsAPI === 'undefined') {
-            alert('ONLYOFFICE API script not loaded. Please verify the vendor script path.')
-            return
-        }
+    function startBridge() {
         const params = getUrlParams()
         if (params.docConfig) {
             loadOnlyoffice(JSON.parse(params.docConfig))
@@ -569,8 +585,31 @@
         postToParent({ type: 'onlyoffice-ready' })
     }
 
+    function init() {
+        if (typeof DocsAPI !== 'undefined') {
+            startBridge()
+            return
+        }
+        let attempts = 0
+        const checkTimer = setInterval(() => {
+            attempts += 1
+            if (typeof DocsAPI !== 'undefined') {
+                clearInterval(checkTimer)
+                startBridge()
+            } else if (attempts > 80) { // 8 seconds timeout
+                clearInterval(checkTimer)
+                console.error('ONLYOFFICE API script load timeout.')
+                postOpenError('ONLYOFFICE API script failed to load. Check network / vendor path.')
+            }
+        }, 100)
+    }
+
     window.addEventListener('message', handleMessage)
     window.addEventListener('load', init)
+    // Also trigger init immediately in case load already fired
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        init()
+    }
 </script>
 </body>
 </html>
