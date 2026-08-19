@@ -817,6 +817,11 @@
             <a href="#playground" class="sidebar-link">Live Playground</a>
         </div>
         <div class="sidebar-group">
+            <div class="sidebar-title">Reference</div>
+            <a href="#formats" class="sidebar-link">Supported Formats</a>
+            <a href="#limitations" class="sidebar-link">Known Limitations</a>
+        </div>
+        <div class="sidebar-group">
             <div class="sidebar-title">Interface Showcase</div>
             <a href="#showcase" class="sidebar-link">Screenshots & Editors</a>
         </div>
@@ -926,7 +931,7 @@ function saveDocument() {
                         </tr>
                         <tr>
                             <td><code>onlyoffice-saved</code></td>
-                            <td><code>ok: bool, buffer: ArrayBuffer, fileName: str, fileType: str, requestId?: str, isDownload?: bool</code></td>
+                            <td><code>ok: bool, buffer: ArrayBuffer, fileName: str, fileType: str, requestId?: str, isExport?: bool</code></td>
                             <td>Delivers the raw binary stream after save or export.</td>
                         </tr>
                         <tr>
@@ -1221,6 +1226,57 @@ window.addEventListener('message', async (event) => {
             </div>
         </section>
 
+        <section id="formats" class="section">
+            <h2>Supported File Formats</h2>
+            <p>bedoffice supports the following formats via the ONLYOFFICE WASM engine:</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Editor</th>
+                            <th>Open (Read/Edit)</th>
+                            <th>Save / Export</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Document</strong></td>
+                            <td>DOCX, DOC, ODT, RTF, TXT, HTML, EPUB, FB2, DOTX</td>
+                            <td>DOCX, ODT, RTF, TXT, PDF, DOTX</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Spreadsheet</strong></td>
+                            <td>XLSX, XLS, ODS, CSV, XLTX</td>
+                            <td>XLSX, ODS, CSV, PDF, XLTX</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Presentation</strong></td>
+                            <td>PPTX, PPT, ODP, PPSX, POTX</td>
+                            <td>PPTX, ODP, PDF, POTX</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PDF</strong></td>
+                            <td>PDF, XPS, OXPS, DJVU</td>
+                            <td>PDF</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="limitations" class="section">
+            <h2>Known Limitations &amp; Caveats</h2>
+            <p>Important constraints for developers integrating the client-side WASM build:</p>
+            <ul>
+                <li><strong><code>forcesave: true</code> must NOT be used</strong> — The ONLYOFFICE WASM build has no backend Document Server. Setting <code>customization.forcesave: true</code> will crash with <code>TypeError: Cannot read properties of undefined (reading 'code')</code> at <code>_onForceSaveStart</code>.</li>
+                <li><strong>PDF files use binary injection</strong> — PDF documents must be opened via <code>localOpenFromBinary: true</code> with <code>document.url: undefined</code>. The binary is injected via <code>docEditor.openDocument({ buffer })</code> during the <code>onAppReady</code> event. Passing a Blob URL as <code>document.url</code> for PDF will trigger an "inconsistent extension" error.</li>
+                <li><strong>Save flow uses <code>onSaveDocument</code> event</strong> — The toolbar Save button and Ctrl+S trigger ONLYOFFICE's native <code>onSaveDocument</code> event, which delivers the document binary as <code>event.data</code> (ArrayBuffer). The host must register <code>config.events.onSaveDocument</code> to capture saved files.</li>
+                <li><strong>File size depends on browser memory</strong> — Since <code>x2t.wasm</code> runs entirely in-browser, very large documents (&gt;50 MB) may exceed browser memory limits depending on device hardware.</li>
+                <li><strong>No real-time collaboration</strong> — This is a single-user offline editor. Co-editing features require a server-side ONLYOFFICE Document Server deployment.</li>
+                <li><strong><code>themes.json</code> and <code>plugins.json</code> may 404</strong> — These optional assets are not included in the WASM build. The editor functions normally without them; console 404 warnings can be safely ignored.</li>
+            </ul>
+        </section>
+
         <section id="playground" class="section">
             <h2>Live postMessage Playground</h2>
             <p>Test the bedoffice bridge API in real-time. Send commands and observe events from the embedded <code>onlyoffice.html</code> iframe.</p>
@@ -1234,7 +1290,7 @@ window.addEventListener('message', async (event) => {
                             <span id="pgStatus">Connecting...</span>
                         </div>
                     </div>
-                    <iframe id="pgFrame" src="https://milio48.github.io/bedoffice/onlyoffice.html"></iframe>
+                    <iframe id="pgFrame" src="./onlyoffice.html"></iframe>
                 </div>
 
                 <div class="pg-panel">
