@@ -48,8 +48,15 @@
         window.parent.postMessage(message, '*', transfer || [])
     }
 
+    function getEditorIframe() {
+        return document.querySelector('#editor iframe') ||
+               document.querySelector('iframe#iframeEditor') ||
+               document.querySelector('iframe#editor') ||
+               document.querySelector('iframe')
+    }
+
     function setStreamOnlyFlag() {
-        const frame = document.querySelector('#editor iframe')
+        const frame = getEditorIframe()
         if (!frame || !frame.contentWindow) return false
         frame.contentWindow.OO_FILE_STREAM_ONLY = true
         return true
@@ -79,6 +86,7 @@
         if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
             console.log('[bedoffice] Ctrl+S intercepted on element:', e.target)
             e.preventDefault()
+            e.stopPropagation()
             doSave('Ctrl+S keydown')
         }
     }
@@ -87,7 +95,7 @@
     window.addEventListener('keydown', handleSaveKeydown, true)
 
     function hookAllEditorElements() {
-        const frame = document.querySelector('#editor iframe')
+        const frame = getEditorIframe()
         if (!frame || !frame.contentWindow) return false
 
         try {
@@ -131,13 +139,28 @@
                 })
             })
 
-            // 3. Hook inputs/textareas inside inner editor (where typing focus lives)
-            const inputs = doc.querySelectorAll('input, textarea, canvas, .asc-editor-input')
+            // 3. Hook inputs/textareas/canvas inside inner editor (where typing focus lives)
+            const inputs = doc.querySelectorAll('input, textarea, canvas, .asc-editor-input, .asc-canvas')
             inputs.forEach(inp => {
                 if (!inp._bedofficeKeyHooked) {
                     inp._bedofficeKeyHooked = true
                     inp.addEventListener('keydown', handleSaveKeydown, true)
                 }
+            })
+
+            // 4. Recursively hook any nested sub-iframes
+            const subFrames = doc.querySelectorAll('iframe')
+            subFrames.forEach(sub => {
+                try {
+                    const subWin = sub.contentWindow
+                    const subDoc = subWin && subWin.document
+                    if (subWin && subDoc && !subWin._bedofficeKeyHooked) {
+                        subWin._bedofficeKeyHooked = true
+                        subWin.addEventListener('keydown', handleSaveKeydown, true)
+                        subDoc.addEventListener('keydown', handleSaveKeydown, true)
+                        console.log('[bedoffice] Attached Ctrl+S keydown listener to nested sub-iframe')
+                    }
+                } catch (err) {}
             })
 
             return true
