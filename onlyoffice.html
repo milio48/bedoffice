@@ -147,13 +147,17 @@
     }
 
     function onDocumentReady() {
+        console.log('[bedoffice] onDocumentReady fired')
         postToParent({ type: 'onlyoffice-document-ready' })
-        // Continuous polling: toolbar elements can render dynamically after document ready
-        const timer = setInterval(() => {
-            setStreamOnlyFlag()
-            hookAllEditorElements()
-        }, 300)
+        setStreamOnlyFlag()
+        hookAllEditorElements()
     }
+
+    // Start continuous hooking immediately so we never miss dynamically rendered toolbar elements
+    setInterval(() => {
+        setStreamOnlyFlag()
+        hookAllEditorElements()
+    }, 250)
 
     function triggerDownload(buffer, data) {
         const blob = new Blob([buffer], { type: 'application/octet-stream' })

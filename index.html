@@ -2132,9 +2132,20 @@
             }
         })
 
-        window.addEventListener('beforeunload', (e) => {
-            if (session && session.modified) e.preventDefault()
-        })
+        /* Global Instant Ctrl+S Shortcut */
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                if (session && session.frame && session.frame.contentWindow) {
+                    console.log('[bedoffice-parent] Global Ctrl+S triggered -> sending onlyoffice-save')
+                    e.preventDefault()
+                    session.frame.contentWindow.postMessage({
+                        type: 'onlyoffice-save',
+                        requestId: 'save_ctrl_s_' + Date.now(),
+                        format: (session.record && session.record.fileType) || 'docx'
+                    }, '*')
+                }
+            }
+        }, true)
 
         /* ---------- Drag and Drop ---------- */
         function setupDragAndDrop() {
